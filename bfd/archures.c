@@ -375,6 +375,8 @@ DESCRIPTION
 .#define bfd_mach_am33_2	332
 .  bfd_arch_fr30,
 .#define bfd_mach_fr30		0x46523330
+.  bfd_arch_fructus,   {* The Fructus 16-bit retrocomputer.  *}
+.#define bfd_mach_fructus	1
 .  bfd_arch_frv,
 .#define bfd_mach_frv		1
 .#define bfd_mach_frvsimple	2
@@ -660,6 +662,7 @@ extern const bfd_arch_info_type bfd_dlx_arch;
 extern const bfd_arch_info_type bfd_bpf_arch;
 extern const bfd_arch_info_type bfd_epiphany_arch;
 extern const bfd_arch_info_type bfd_fr30_arch;
+extern const bfd_arch_info_type bfd_fructus_arch;
 extern const bfd_arch_info_type bfd_frv_arch;
 extern const bfd_arch_info_type bfd_h8300_arch;
 extern const bfd_arch_info_type bfd_hppa_arch;
@@ -748,6 +751,7 @@ static const bfd_arch_info_type * const bfd_archures_list[] =
     &bfd_bpf_arch,
     &bfd_epiphany_arch,
     &bfd_fr30_arch,
+    &bfd_fructus_arch,
     &bfd_frv_arch,
     &bfd_h8300_arch,
     &bfd_hppa_arch,

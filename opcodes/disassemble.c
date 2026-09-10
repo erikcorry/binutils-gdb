@@ -50,6 +50,7 @@
 #define ARCH_dlx
 #define ARCH_epiphany
 #define ARCH_fr30
+#define ARCH_fructus
 #define ARCH_frv
 #define ARCH_ft32
 #define ARCH_h8300
@@ -496,6 +497,11 @@ disassembler (enum bfd_architecture a,
      case bfd_arch_visium:
        disassemble = print_insn_visium;
        break;
+#endif
+#ifdef ARCH_fructus
+    case bfd_arch_fructus:
+      disassemble = print_insn_fructus;
+      break;
 #endif
 #ifdef ARCH_frv
     case bfd_arch_frv:

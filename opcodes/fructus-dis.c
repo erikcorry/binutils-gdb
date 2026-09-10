@@ -52,7 +52,13 @@ print_operands (struct disassemble_info *info, const fructus_opc_info_t *op,
      plausible.  */
   bfd_vma next = addr + op->length;
   int imm16 = b1 | (b2 << 8);
-  int off8 = (int) ((signed char) b2);
+  /* A PC-relative displacement ALWAYS ENDS ITS INSTRUCTION - that holds over
+     the whole spec and tools/gen-asm.js asserts it - so it is the last byte,
+     which is byte 1 of a two-byte jmpr and byte 2 of every three-byte branch.
+     Reading b2 unconditionally makes the short jmpr disassemble as a branch to
+     itself, which is a plausible-looking listing and not an obvious wrong
+     answer.  */
+  int off8 = (int) ((signed char) (op->length == 2 ? b1 : b2));
 
   switch (op->itype)
     {

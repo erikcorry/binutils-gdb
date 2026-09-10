@@ -158,6 +158,7 @@ TARGET_CPU_CFILES = \
 	config/tc-dlx.c \
 	config/tc-epiphany.c \
 	config/tc-fr30.c \
+	config/tc-fructus.c \
 	config/tc-frv.c \
 	config/tc-ft32.c \
 	config/tc-h8300.c \
@@ -233,6 +234,7 @@ TARGET_CPU_HFILES = \
 	config/tc-dlx.h \
 	config/tc-epiphany.h \
 	config/tc-fr30.h \
+	config/tc-fructus.h \
 	config/tc-frv.h \
 	config/tc-ft32.h \
 	config/tc-h8300.h \

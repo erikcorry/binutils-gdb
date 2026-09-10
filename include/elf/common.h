@@ -459,6 +459,10 @@
    architecture was derived.  */
 #define EM_CSKY_OLD		EM_MCORE
 
+/* Fructus: a 16-bit retrocomputer ISA.  0xfc75 spells FCTS, a contraction of
+   the name.  Unofficial - see the comment above.  */
+#define EM_FRUCTUS		0xfc75
+
 /* See the above comment before you add a new EM_* value here.  */
 
 /* Values for e_version.  */

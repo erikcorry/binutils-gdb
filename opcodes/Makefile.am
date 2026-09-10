@@ -146,6 +146,9 @@ TARGET32_LIBOPCODES_CFILES = \
 	fr30-dis.c \
 	fr30-ibld.c \
 	fr30-opc.c \
+	fructus-asm.c \
+	fructus-dis.c \
+	fructus-opc.c \
 	frv-asm.c \
 	frv-desc.c \
 	frv-dis.c \

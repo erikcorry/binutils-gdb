@@ -1304,6 +1304,7 @@ case $cpu-$vendor in
 			| f700 \
 			| fido \
 			| fr30 \
+			| fructus \
 			| frv \
 			| ft32 \
 			| fx80 \

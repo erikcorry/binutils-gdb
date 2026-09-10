@@ -660,6 +660,7 @@ TARGET_CPU_CFILES = \
 	config/tc-dlx.c \
 	config/tc-epiphany.c \
 	config/tc-fr30.c \
+	config/tc-fructus.c \
 	config/tc-frv.c \
 	config/tc-ft32.c \
 	config/tc-h8300.c \
@@ -735,6 +736,7 @@ TARGET_CPU_HFILES = \
 	config/tc-dlx.h \
 	config/tc-epiphany.h \
 	config/tc-fr30.h \
+	config/tc-fructus.h \
 	config/tc-frv.h \
 	config/tc-ft32.h \
 	config/tc-h8300.h \
@@ -1133,6 +1135,8 @@ config/tc-epiphany.$(OBJEXT): config/$(am__dirstamp) \
 	config/$(DEPDIR)/$(am__dirstamp)
 config/tc-fr30.$(OBJEXT): config/$(am__dirstamp) \
 	config/$(DEPDIR)/$(am__dirstamp)
+config/tc-fructus.$(OBJEXT): config/$(am__dirstamp) \
+	config/$(DEPDIR)/$(am__dirstamp)
 config/tc-frv.$(OBJEXT): config/$(am__dirstamp) \
 	config/$(DEPDIR)/$(am__dirstamp)
 config/tc-ft32.$(OBJEXT): config/$(am__dirstamp) \
@@ -1395,6 +1399,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-dlx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-epiphany.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-fr30.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-fructus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-frv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-ft32.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@config/$(DEPDIR)/tc-h8300.Po@am__quote@

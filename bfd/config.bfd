@@ -496,6 +496,10 @@ case "${targ}" in
     targ_selvecs=frv_elf32_fdpic_vec
     ;;
 
+  fructus-*-elf | fructus-*-*)
+    targ_defvec=fructus_elf32_vec
+    ;;
+
   frv-*-*linux*)
     targ_defvec=frv_elf32_fdpic_vec
     targ_selvecs=frv_elf32_vec

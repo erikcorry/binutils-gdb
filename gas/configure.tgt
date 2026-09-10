@@ -197,6 +197,7 @@ case ${generic_target} in
   epiphany-*-*)				fmt=elf ;;
 
   fr30-*-*)				fmt=elf ;;
+  fructus-*-*)				fmt=elf ;;
   frv-*-*linux*)			fmt=elf em=linux;;
   frv-*-*)				fmt=elf ;;
 

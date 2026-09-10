@@ -112,6 +112,7 @@
 #include "elf/bpf.h"
 #include "elf/epiphany.h"
 #include "elf/fr30.h"
+#include "elf/fructus.h"
 #include "elf/frv.h"
 #include "elf/ft32.h"
 #include "elf/h8.h"
@@ -1292,6 +1293,7 @@ guess_is_rela (unsigned int e_machine)
     case EM_D30V:
     case EM_CYGNUS_D30V:
     case EM_FR30:
+    case EM_FRUCTUS:
     case EM_FT32:
     case EM_CYGNUS_FR30:
     case EM_CYGNUS_FRV:
@@ -2434,6 +2436,10 @@ dump_relocations (Filedata *          filedata,
 	case EM_FR30:
 	case EM_CYGNUS_FR30:
 	  rtype = elf_fr30_reloc_type (type);
+	  break;
+
+	case EM_FRUCTUS:
+	  rtype = elf_fructus_reloc_type (type);
 	  break;
 
 	case EM_CYGNUS_FRV:
@@ -3839,6 +3845,7 @@ get_machine_name (unsigned e_machine)
     case EM_ADAPTEVA_EPIPHANY:	return "Adapteva EPIPHANY";
     case EM_CYGNUS_FRV:		return "Fujitsu FR-V";
     case EM_S12Z:               return "Freescale S12Z";
+    case EM_FRUCTUS:		return "Fructus";
 
     default:
       snprintf (buff, sizeof (buff), _("<unknown>: 0x%x"), e_machine);
@@ -16513,6 +16520,8 @@ is_16bit_abs_reloc (Filedata * filedata, unsigned int reloc_type)
     case EM_CYGNUS_D10V:
     case EM_D10V:
       return reloc_type == 3; /* R_D10V_16.  */
+    case EM_FRUCTUS:
+      return reloc_type == 2; /* R_FRUCTUS_16.  */
     case EM_FT32:
       return reloc_type == 2; /* R_FT32_16.  */
     case EM_H8S:
@@ -16572,6 +16581,8 @@ is_8bit_abs_reloc (Filedata * filedata, unsigned int reloc_type)
 {
   switch (filedata->file_header.e_machine)
     {
+    case EM_FRUCTUS:
+      return reloc_type == 1; /* R_FRUCTUS_8.  */
     case EM_RISCV:
       return reloc_type == 54; /* R_RISCV_SET8.  */
     case EM_Z80:
@@ -16796,6 +16807,7 @@ is_none_reloc (Filedata * filedata, unsigned int reloc_type)
     case EM_ARC_COMPACT3_64: /* R_ARC_NONE.  */
     case EM_ARM:     /* R_ARM_NONE.  */
     case EM_CRIS:    /* R_CRIS_NONE.  */
+    case EM_FRUCTUS: /* R_FRUCTUS_NONE.  */
     case EM_FT32:    /* R_FT32_NONE.  */
     case EM_IA_64:   /* R_IA64_NONE.  */
     case EM_K1OM:    /* R_X86_64_NONE.  */
