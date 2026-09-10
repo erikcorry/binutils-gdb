@@ -86,6 +86,26 @@ typedef struct fructus_form
 extern const fructus_form fructus_forms[];
 extern const unsigned int fructus_nforms;
 
+/* Which rows a first byte can decode to.  A LIST, because the mnemonic is not a
+   function of byte 0: length is - the ISA commits to that - but the unary block
+   packs sxt8, clz and popcount into opcode 0x32 and separates them with two
+   bits of byte 1.  Each entry carries the byte-1 mask and match that selects
+   it, and the first match wins.
+
+   Printing through the row's SYNTAX is what makes a listing reassemblable.  An
+   itype is a bit layout and not a syntax, so `ld rd, [ra, #imm3]' and
+   `add rd, ra, #imm3' share one, and a printer driven by the layout puts an
+   ALU op's punctuation on a load.  */
+typedef struct fructus_cand
+{
+  unsigned char mask;		/* which bits of byte 1 select this row */
+  unsigned char match;
+  short         form;		/* index into fructus_forms */
+} fructus_cand;
+
+extern const fructus_cand fructus_opcode_cand[];
+extern const short fructus_opcode_first[257];	/* [b] .. [b+1] is b's range */
+
 /* The condimm5 spellings the assembler accepts: the 32 table entries, plus
    every other way of writing the same predicate.  `le #3' and `lt #4' are one
    entry; so are `hs #1' and `ne #0'.  Derived by comparing truth sets at both
@@ -95,6 +115,7 @@ typedef struct fructus_condimm
   const char *   cond;
   unsigned short imm;		/* as written, masked to 16 bits */
   unsigned char  index;		/* the five-bit field it encodes to */
+  unsigned char  width;		/* the comparison width it holds at: 8 or 16 */
 } fructus_condimm;
 
 extern const fructus_condimm fructus_condimm_accept[];

@@ -11,6 +11,7 @@
 #define DEFINE_TABLE
 
 #include "opcode/fructus.h"
+#include "opcode/fructus-asm.h"
 #include "disassemble.h"
 
 /* Fructus is byte-granular and variable length, and an instruction's length is
@@ -18,26 +19,42 @@
    ISA, so this disassembler never looks ahead: read one byte, learn the length,
    read the rest.  Nothing here has to resynchronise.
 
-   Byte 1, where there is one, has one of a small number of layouts, and which
-   one is the opcode's itype.  The operand fields sit in fixed places within it:
+   PRINTING IS DRIVEN BY THE SPEC'S OWN SYNTAX.  fructus_form_by_opcode takes a
+   first byte to a row of the generated form table, and that row carries both
+   the syntax to print and the bit positions to read - so this file contains no
+   per-instruction format strings at all.
 
-     ddd a aa ss     destination, source, and two bits left over
-     aaa i iiii      one register and a five-bit field
-     ccc b bb ee     a condition and two registers
+   That is not tidiness, it is the fix for a bug that recurred three times.  An
+   itype is a bit LAYOUT and not a syntax, and several layouts serve more than
+   one syntax:
 
-   so the extractors below are shared by every itype that uses that shape.  */
+     ld rd, [ra, #imm3]   and  add rd, ra, #imm3      one layout, brackets or not
+     mov rd, #immbit5     and  add rd, rd, #immbit5   one layout, two operands or three
+     add r0, r0, #1                                   pinned - a bare mnemonic is
+                                                      not reassemblable
 
-#define REG(n)   fructus_reg_names[(n) & 7]
-#define D(b1)    REG ((b1) >> 5)          /* byte1[7:5] - dest, or a lone reg */
-#define A(b1)    REG (((b1) >> 2) & 7)    /* byte1[4:2] - ALU port A */
-#define B(b1,op) REG ((((b1) & 3) << 1) | ((op) & 1))
-                                          /* byte1[1:0] + opcode[0] - port B */
+   A printer keyed on the layout gets the punctuation of whichever instruction
+   it was written for and is wrong for the rest.  Keyed on the syntax it cannot
+   be.  */
 
-/* A five-bit field is read through one of three tables, or as a signed
-   integer.  An index is not a value: byte 1 of `add rd, ra, #imm3` holds 6 and
-   the programmer wrote #8.  */
-#define F5(b1)   ((b1) & 0x1f)
-#define SX5(b1)  ((int) ((F5 (b1) ^ 0x10) - 0x10))
+/* WHICH FORM.  Length is a function of byte 0 - the ISA commits to that - but
+   THE MNEMONIC IS NOT: the unary block packs sxt8, clz and popcount into opcode
+   0x32 and separates them with two bits of byte 1.  So byte 0 selects a list
+   and byte 1 picks from it, first match winning, in the same order
+   tools/decode.js tries them.  A flat 256-entry name table disassembles clz as
+   sxt8, which is a plausible-looking listing naming the wrong instruction.  */
+
+static const fructus_form *
+fructus_form_for (unsigned char b0, unsigned char b1)
+{
+  int i;
+
+  for (i = fructus_opcode_first[b0]; i < fructus_opcode_first[b0 + 1]; i++)
+    if ((b1 & fructus_opcode_cand[i].mask) == fructus_opcode_cand[i].match)
+      return &fructus_forms[fructus_opcode_cand[i].form];
+
+  return NULL;
+}
 
 static int
 print_operands (struct disassemble_info *info, const fructus_opc_info_t *op,
@@ -46,110 +63,122 @@ print_operands (struct disassemble_info *info, const fructus_opc_info_t *op,
 {
   fprintf_styled_ftype fpr = info->fprintf_styled_func;
   void *stream = info->stream;
-  /* A displacement is measured from the address of the NEXT instruction, not
-     from the field, so the length is part of the sum.  Getting this wrong
-     produces listings that are off by the instruction length and look
-     plausible.  */
-  bfd_vma next = addr + op->length;
-  int imm16 = b1 | (b2 << 8);
-  /* A PC-relative displacement ALWAYS ENDS ITS INSTRUCTION - that holds over
-     the whole spec and tools/gen-asm.js asserts it - so it is the last byte,
-     which is byte 1 of a two-byte jmpr and byte 2 of every three-byte branch.
-     Reading b2 unconditionally makes the short jmpr disassemble as a branch to
-     itself, which is a plausible-looking listing and not an obvious wrong
-     answer.  */
-  int off8 = (int) ((signed char) (op->length == 2 ? b1 : b2));
+  const fructus_form *f = fructus_form_for (b0, b1);
+  unsigned long word;
+  long v[8];
+  unsigned int i, k;
+  const char *p;
 
-  switch (op->itype)
+  if (f == NULL)
+    return fpr (stream, dis_style_text, "; no form for opcode 0x%02x", b0);
+
+  /* The instruction as one word, byte 0 in the most significant position - the
+     same orientation the form table's place list is written in.  */
+  word = ((unsigned long) b0 << 16) | ((unsigned long) b1 << 8) | b2;
+  word >>= 8 * (3 - f->nbytes);
+
+  /* Pull each slot's value out.  A pinned slot carries the value the form fixes
+     it at; a tied one repeats another slot, which is why ties are resolved in a
+     second pass.  */
+  for (i = 0; i < f->nslots; i++)
+    v[i] = f->slots[i].fixed ? f->slots[i].value : 0;
+  for (k = 0; k < f->nplaces; k++)
     {
-    case FRUCTUS_1B_NONE:
-      return 0;
+      const fructus_place *pl = &f->places[k];
+      unsigned long mask = (1UL << pl->width) - 1;
 
-    case FRUCTUS_2B_REG:
-      return fpr (stream, dis_style_register, "%s", D (b1));
-
-    case FRUCTUS_2B_REG_REG:
-      return fpr (stream, dis_style_register, "%s, %s", D (b1), A (b1));
-
-    case FRUCTUS_2B_REG_REG_REG:
-      return fpr (stream, dis_style_register, "%s, %s, %s",
-		  D (b1), A (b1), B (b1, b0));
-
-    case FRUCTUS_2B_IMM5_REG:
-      return fpr (stream, dis_style_immediate, "%s, %s, #%d",
-		  D (b1), D (b1), SX5 (b1));
-
-    case FRUCTUS_2B_IMMBIT5_REG:
-      return fpr (stream, dis_style_immediate, "%s, %s, #0x%04x",
-		  D (b1), D (b1), fructus_immbit5[F5 (b1)]);
-
-    case FRUCTUS_2B_IMMASK5_REG:
-      return fpr (stream, dis_style_immediate, "%s, %s, #0x%04x",
-		  D (b1), D (b1), fructus_immask5[F5 (b1)]);
-
-    case FRUCTUS_2B_IMM3_REG_REG:
-      /* The index is {byte1[1:0], opcode[0]} - the same three bits that carry
-	 ALU port B, which is why a three-register form and an imm3 form are
-	 the same layout with a different reading.  */
-      return fpr (stream, dis_style_immediate, "%s, %s, #%d",
-		  D (b1), A (b1),
-		  (short) fructus_imm3[(((b1) & 3) << 1) | (b0 & 1)]);
-
-    case FRUCTUS_2B_REG_REG_SHIFT3:
-      return fpr (stream, dis_style_immediate, "%s, %s, #%d",
-		  D (b1), A (b1),
-		  (short) fructus_shift3[(((b1) & 3) << 1) | (b0 & 1)]);
-
-    case FRUCTUS_3B_IMM10_REG_REG:
-      {
-	int v = ((b1 & 3) << 8) | b2;
-	v = (v ^ 0x200) - 0x200;                 /* sign extend 10 bits */
-	return fpr (stream, dis_style_immediate, "%s, %s, #%d", D (b1), A (b1), v);
-      }
-
-    case FRUCTUS_3B_INT16_REG:
-      return fpr (stream, dis_style_immediate, "%s, #0x%04x", D (b1), imm16);
-
-    case FRUCTUS_2B_OFF8:
-      info->print_address_func (next + off8, info);
-      return 0;
-
-    case FRUCTUS_3B_INT16:
-      info->print_address_func ((bfd_vma) imm16, info);
-      return 0;
-
-    case FRUCTUS_3B_COND3_OFF8_REG_REG:
-      /* cccb_bbee: the two registers are the other way round from the syntax,
-	 so that the comparison is an rsb with no extra multiplexing.  See the
-	 br section of isa/fructus.toml.  */
-      fpr (stream, dis_style_mnemonic, "%s, ", fructus_cond_names[(b1 >> 5) & 7]);
-      fpr (stream, dis_style_register, "%s, %s, ",
-	   B (b1, b0), REG ((b1 >> 2) & 7));
-      info->print_address_func (next + off8, info);
-      return 0;
-
-    case FRUCTUS_3B_CONDIMM5_OFF8_REG:
-      fpr (stream, dis_style_mnemonic, "%s, ", fructus_condimm5_cond[F5 (b1)]);
-      fpr (stream, dis_style_register, "%s, ", D (b1));
-      fpr (stream, dis_style_immediate, "#%d, ", fructus_condimm5_imm[F5 (b1)]);
-      info->print_address_func (next + off8, info);
-      return 0;
-
-    case FRUCTUS_3B_IMMBIT5_OFF8_REG:
-      fpr (stream, dis_style_register, "%s, ", D (b1));
-      fpr (stream, dis_style_immediate, "#0x%04x, ", fructus_immbit5[F5 (b1)]);
-      info->print_address_func (next + off8, info);
-      return 0;
-
-    case FRUCTUS_3B_IMMASK5_OFF8_REG:
-      fpr (stream, dis_style_register, "%s, ", D (b1));
-      fpr (stream, dis_style_immediate, "#0x%04x, ", fructus_immask5[F5 (b1)]);
-      info->print_address_func (next + off8, info);
-      return 0;
-
-    default:
-      return fpr (stream, dis_style_text, "; unhandled itype %d", op->itype);
+      v[pl->slot] |= (long) (((word >> pl->ilo) & mask) << pl->vlo);
     }
+  for (i = 0; i < f->nslots; i++)
+    if (f->slots[i].tie >= 0)
+      v[i] = v[f->slots[i].tie];
+
+  /* condimm5 is one five-bit index printed in two places, so the constant half
+     reads the index its condition half holds.  */
+  for (i = 0; i < f->nslots; i++)
+    if (f->slots[i].kind == FR_CK && i > 0 && f->slots[i - 1].kind == FR_CC)
+      v[i] = fructus_condimm5_imm[v[i - 1] & 31];
+
+  for (p = f->syntax; *p; p++)
+    {
+      const fructus_opnd *o;
+      long x;
+
+      if (*p != '%')
+	{
+	  fpr (stream, dis_style_text, "%c", *p);
+	  continue;
+	}
+      i = *++p - '0';
+      o = &f->slots[i];
+      x = v[i];
+
+      switch (o->kind)
+	{
+	case FR_REG:
+	  fpr (stream, dis_style_register, "%s", fructus_reg_names[x & 7]);
+	  break;
+
+	case FR_COND:
+	  fpr (stream, dis_style_mnemonic, "%s", fructus_cond_names[x & 7]);
+	  break;
+
+	case FR_CC:
+	  fpr (stream, dis_style_mnemonic, "%s", fructus_condimm5_cond[x & 31]);
+	  break;
+
+	case FR_CK:
+	  fpr (stream, dis_style_immediate, "%ld", x);
+	  break;
+
+	case FR_TABLE:
+	  {
+	    /* Convert from the index in the instruction to its immediate value.  */
+	    const unsigned short *t = NULL;
+
+	    switch (o->table)
+	      {
+	      case FR_T_IMM3:    t = fructus_imm3;    break;
+	      case FR_T_SHIFT3:  t = fructus_shift3;  break;
+	      case FR_T_IMMBIT5: t = fructus_immbit5; break;
+	      case FR_T_IMMASK5: t = fructus_immask5; break;
+	      default: break;
+	      }
+	    if (t == NULL)
+	      fpr (stream, dis_style_text, "?");
+	    else if (o->table == FR_T_IMM3 || o->table == FR_T_SHIFT3)
+	      fpr (stream, dis_style_immediate, "%d", (short) t[x & 7]);
+	    else
+	      fpr (stream, dis_style_immediate, "0x%04x", t[x & 31]);
+	  }
+	  break;
+
+	default:		/* FR_INT */
+	  if (o->pcrel)
+	    {
+	      /* A displacement is measured from the address of the next instruction,
+		 not from the field, so the length is part of the sum.  */
+	      long d = x;
+
+	      if (o->bits < 32 && (d & (1L << (o->bits - 1))))
+		d -= 1L << o->bits;
+	      info->print_address_func ((addr + f->nbytes + d) & 0xffff, info);
+	    }
+	  else if (o->fixed || o->bits == 0)
+	    fpr (stream, dis_style_immediate, "%d", (short) x);
+	  else if (o->is_signed && (x & (1L << (o->bits - 1))))
+	    fpr (stream, dis_style_immediate, "%ld", x - (1L << o->bits));
+	  else if (o->bits >= 16)
+	    fpr (stream, dis_style_immediate, "0x%04lx", x & 0xffff);
+	  else
+	    fpr (stream, dis_style_immediate, "%ld", x);
+	  break;
+	}
+    }
+
+  (void) op;
+  (void) b2;
+  return 0;
 }
 
 int
@@ -184,12 +213,23 @@ print_insn_fructus (bfd_vma addr, struct disassemble_info *info)
       return -1;
     }
 
-  fpr (stream, dis_style_mnemonic, "%s", op->name);
-  if (op->itype != FRUCTUS_1B_NONE)
-    {
-      fpr (stream, dis_style_text, "\t");
-      print_operands (info, op, buf[0], buf[1], buf[2], addr);
-    }
+  {
+    const fructus_form *f = fructus_form_for (buf[0], buf[1]);
+
+    /* The NAME comes from the form, not from the 256-entry table: three unary
+       ops share opcode 0x32.  */
+    fpr (stream, dis_style_mnemonic, "%s", f != NULL ? f->mnemonic : op->name);
+
+    /* Whether there are operands to print is a property of the SYNTAX, not of
+       the length: `add r0, r0, #1' is one byte with all three operands pinned,
+       and printing it as a bare `add' gives a listing that will not reassemble.
+       Only ret, nop, halt and the like have no syntax at all.  */
+    if (f != NULL && f->syntax[0] != '\0')
+      {
+	fpr (stream, dis_style_text, "\t");
+	print_operands (info, op, buf[0], buf[1], buf[2], addr);
+      }
+  }
 
   return op->length;
 }

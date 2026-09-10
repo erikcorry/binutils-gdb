@@ -354,8 +354,12 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	      return false;
 	    imm = (valueT) sv[j].ex.X_add_number & 0xffff;
 
+	    /* The width matters: `le #0' is `lt #1' at sixteen bits, and at
+	       eight `lt #1' and `lt #-32767' are the same predicate, because
+	       -32767 & 255 is 1.  So br and br8 take different spellings.  */
 	    for (k = 0; k < fructus_ncondimm_accept; k++)
 	      if (fructus_condimm_accept[k].imm == imm
+		  && fructus_condimm_accept[k].width == o->bits
 		  && strncmp (fructus_condimm_accept[k].cond, sv[i].name,
 			      sv[i].namelen) == 0
 		  && fructus_condimm_accept[k].cond[sv[i].namelen] == '\0')

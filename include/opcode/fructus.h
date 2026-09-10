@@ -20,8 +20,17 @@ typedef struct fructus_opc_info_t
 {
   unsigned char  length;    /* 1, 2 or 3; 0 if the opcode is unused */
   unsigned char  itype;     /* operand layout - one of the FRUCTUS_* below */
+  unsigned char  pcrel;     /* 1 if its immediate is a DISPLACEMENT */
   const char *   name;      /* mnemonic, or NULL */
 } fructus_opc_info_t;
+
+/* WHY pcrel IS A FIELD AND NOT PART OF THE itype.  An itype is a bit LAYOUT,
+   and `jmpr rel16' and `jmp abs16' have the same one: a whole opcode byte then
+   a 16-bit immediate, low byte first.  What differs is what the immediate
+   MEANS, and a disassembler that ignores the difference prints the raw
+   displacement where an address belongs - a listing that looks right and names
+   the wrong place.  Two itypes would say the layouts differ, which would be a
+   lie; this says the layouts are the same and the reading is not.  */
 
 extern const fructus_opc_info_t fructus_opc_info[256];
 
