@@ -232,6 +232,7 @@ ALL_EMULATION_SOURCES = \
 	eelf32epiphany.c \
 	eelf32epiphany_4x4.c \
 	eelf32fr30.c \
+	eelf32fructus.c \
 	eelf32frv.c \
 	eelf32frvfd.c \
 	eelf32ft32.c \
