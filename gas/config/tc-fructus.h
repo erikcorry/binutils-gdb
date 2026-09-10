@@ -21,7 +21,7 @@
 
 /* Little endian, and not an option: isa/fructus.toml declares
    `endian = "little"' for data, and 16-bit immediates are stored low byte
-   first inside instructions to match.  A -EB switch would be a lie.  */
+   first inside instructions to match.  */
 #define TARGET_BYTES_BIG_ENDIAN 0
 
 #define TARGET_FORMAT	"elf32-fructus"
@@ -37,9 +37,8 @@
 
 #define md_number_to_chars		number_to_chars_littleendian
 
-/* `jmpr' is the one instruction with two widths - a 2-byte form reaching
-   -128..127 and a 3-byte form reaching the whole address space - so it is the
-   one instruction that relaxes.  Everything else has a single encoding once
-   its operands are known.  */
+/* `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
+   and a 3-byte form reaching the whole address space.  Everything else has a
+   single encoding once its operands are known.  */
 #define TC_GENERIC_RELAX_TABLE md_relax_table
 extern const relax_typeS md_relax_table[];

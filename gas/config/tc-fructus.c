@@ -18,25 +18,22 @@
    the Free Software Foundation, 51 Franklin Street - Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
-/* THIS FILE KNOWS NO MNEMONICS.  Every instruction, every operand kind and
-   every encoding lives in the generated tables in opcodes/fructus-asm.c, which
-   tools/gen-asm.js writes from isa/fructus.toml.  What is here is the engine:
-   parse the operands a form asks for, decide whether a form accepts them, and
-   place the bits.  Grep this file for "add" or "brclear" and you will find
-   nothing, which is the property worth keeping - the spec is the only place
-   the instruction set is written down.
+/* The engine only: this file names no mnemonic and no encoding.  Every
+   instruction, operand kind and encoding lives in the generated tables in
+   opcodes/fructus-asm.c, which tools/gen-asm.js writes from isa/fructus.toml.
+   What is here parses the operands a form asks for, decides whether a form
+   accepts them, and places the bits.
 
-   FORM SELECTION IS THE WHOLE JOB.  A mnemonic does not determine an encoding:
-   `and rd, rd, #4' fits imm5, immbit5, imm3 and imm10, and `and rd, rd,
+   Form selection is the work.  A mnemonic does not determine an encoding:
+   `and rd, rd, #4' fits imm5, immbit5, imm3 and imm10, while `and rd, rd,
    #0xff00' fits only immask5 and imm10.  The generated table is sorted
-   shortest first, so taking the FIRST form that accepts what was written is
-   the "prefer the smaller encoding" rule, and there is no size search here.
+   shortest first, so the first form that accepts what was written is the
+   smallest one that can encode it.
 
-   ONE INSTRUCTION RELAXES.  `jmpr' has a 2-byte form reaching -128..127 and a
-   3-byte form reaching the whole address space; everything else has a single
-   encoding once its operands are known.  md_begin finds that pair by looking
-   at the table rather than by knowing its name, and refuses to start if the
-   spec ever grows a second one - see find_relax_pair.  */
+   `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
+   and a 3-byte form reaching the whole address space.  md_begin finds that
+   pair by inspecting the table rather than by knowing its name, and requires
+   it to be unique - see find_relax_pair.  */
 
 #include "as.h"
 #include "safe-ctype.h"
@@ -70,9 +67,9 @@ const pseudo_typeS md_pseudo_table[] = { { 0, 0, 0 } };
 #define FR_RELAX_SHORT	1
 #define FR_RELAX_LONG	2
 
-/* rlx_forward and rlx_backward are measured from the START of the frag, and
-   the displacement a short jmpr encodes is measured from the end of the
-   2-byte instruction - so the reach is the field's reach shifted by 2.  */
+/* rlx_forward and rlx_backward are measured from the start of the frag, while
+   the displacement a short jmpr encodes is measured from the end of the 2-byte
+   instruction - so the reach is the field's reach shifted by 2.  */
 const relax_typeS md_relax_table[] =
 {
   { 0,   0,    0, 0 },			/* unused: subtypes start at 1 */
@@ -181,11 +178,10 @@ reloc_of (int r)
     }
 }
 
-/* Does a written constant fit an encoded integer field?  This is the spec's
-   own rule and not a convenience approximation.  A 16-bit register makes #-1
-   and #0xffff the same thing, so a signed field accepts either spelling and
-   takes the value modulo 2^16; a field as wide as the register accepts
-   anything a programmer could mean by 16 bits.  */
+/* Does a written constant fit an encoded integer field?  A 16-bit register
+   makes #-1 and #0xffff the same value, so a signed field accepts either
+   spelling and takes the value modulo 2^16, and a field as wide as the
+   register accepts anything a programmer could mean by 16 bits.  */
 
 static bool
 int_fits (const fructus_opnd *o, offsetT raw)
@@ -254,9 +250,9 @@ parse_slot (const fructus_opnd *o, char **sp, struct slotval *v)
   return true;
 }
 
-/* Match LINE against FORM's syntax.  Syntax is literal text with %N standing
-   for slot N; whitespace in it means "optional whitespace here", which is why
-   `add r0,r1,r2' and `add r0, r1, r2' are the same line.  */
+/* Match a line against a form's syntax: literal text with %N standing for slot
+   N, and whitespace meaning optional whitespace, so `add r0,r1,r2' and
+   `add r0, r1, r2' are the same line.  */
 
 static bool
 parse_form (const fructus_form *f, char *line, struct slotval *sv)
@@ -292,13 +288,12 @@ parse_form (const fructus_form *f, char *line, struct slotval *sv)
 }
 
 /* =========================================================================
-   Does a form ACCEPT what was parsed, and what does it encode to?
+   Does a form accept what was parsed, and what does it encode to?
    ========================================================================= */
 
 /* Filled in by match_form.  `written' is the value the programmer wrote, which
    is what ties and pinned operands compare against; `encoded' is what goes in
-   the bits, and the two differ for a table operand - #8 is written, index 7 is
-   encoded.  */
+   the bits.  They differ for a table operand: #8 is written, index 7 encoded.  */
 struct matched
 {
   valueT written[FR_MAX_SLOTS];
@@ -340,10 +335,10 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	case FR_CC:
 	  {
 	    /* The constant half is the next slot; the generator guarantees the
-	       pair is adjacent and in that order.  Both halves choose ONE
-	       five-bit index together, and the accept table already holds
-	       every spelling of every predicate - `le #3' and `lt #4' are one
-	       entry - so this is a lookup and not a search for equivalences.  */
+	       pair is adjacent and in that order.  Both halves choose one
+	       five-bit index together, and the accept table already holds every
+	       spelling of every predicate - `le #3' and `lt #4' are one entry -
+	       so this is a lookup rather than a search for equivalences.  */
 	    unsigned int j = i + 1, k;
 	    valueT imm;
 	    int idx = -1;
@@ -354,9 +349,9 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	      return false;
 	    imm = (valueT) sv[j].ex.X_add_number & 0xffff;
 
-	    /* The width matters: `le #0' is `lt #1' at sixteen bits, and at
-	       eight `lt #1' and `lt #-32767' are the same predicate, because
-	       -32767 & 255 is 1.  So br and br8 take different spellings.  */
+	    /* br and br8 take different spellings, because the width decides
+	       which predicates coincide: at eight bits `lt #1' and `lt #-32767'
+	       are the same test, since -32767 & 255 is 1.  */
 	    for (k = 0; k < fructus_ncondimm_accept; k++)
 	      if (fructus_condimm_accept[k].imm == imm
 		  && fructus_condimm_accept[k].width == o->bits
@@ -402,10 +397,9 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	default:		/* FR_INT */
 	  if (o->pcrel)
 	    {
-	      /* A branch displacement is never known here: it depends on where
-		 this instruction lands.  So the field's WIDTH decides whether
-		 the form is usable, and the value arrives as a fixup - or, for
-		 jmpr, as a relaxation.  */
+	      /* A branch displacement depends on where this instruction lands,
+		 so the field's width decides whether the form is usable and
+		 the value arrives as a fixup - or, for jmpr, as relaxation.  */
 	      if (o->reloc == FR_R_NONE)
 		return false;
 	      m->known[i] = false;
@@ -414,11 +408,8 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	  else if (sv[i].ex.X_op == O_constant)
 	    {
 	      /* A pinned or tied operand has no field of its own, so `bits' is
-		 zero and there is no range to check - what constrains it is
-		 the pin or the tie, tested below.  Range-checking it against a
-		 zero-width field rejects every value, which quietly costs the
-		 one-byte forms: `add r0, r0, #1' would assemble as two bytes
-		 and still be correct, so nothing else would notice.  */
+		 zero and there is no range to check; the pin or the tie
+		 constrains it, tested below.  */
 	      if (!o->fixed && o->tie < 0 && !int_fits (o, sv[i].ex.X_add_number))
 		return false;
 	      m->written[i] = m->encoded[i]
@@ -426,10 +417,9 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	    }
 	  else
 	    {
-	      /* A symbol fits only a field wide enough to hold a relocation.
-		 That is the same "does it fit" test as the constant case, and
-		 it is why `mov rd, #label' picks the three-byte form without
-		 anything here naming mov.  */
+	      /* A symbol fits only a field wide enough to hold a relocation,
+		 which is the same "does it fit" test as the constant case and
+		 is how `mov rd, #label' picks the three-byte form.  */
 	      if (o->reloc == FR_R_NONE)
 		return false;
 	      m->known[i] = false;
@@ -439,8 +429,8 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	}
     }
 
-  /* Pinned and tied operands, in a second pass: a tie may point FORWARDS -
-     `ld rd, [ra, #off]' ties d to a, and d is written first.  */
+  /* Pinned and tied operands, in a second pass: a tie may point forwards, as
+     `ld rd, [ra, #off]' ties d to a and d is written first.  */
   for (i = 0; i < f->nslots; i++)
     {
       const fructus_opnd *o = &f->slots[i];
@@ -487,10 +477,10 @@ put_word (char *buf, unsigned long word, int nbytes)
 {
   int i;
 
-  /* Byte 0 of the instruction is the most significant end of the word.  This
-     is the INSTRUCTION stream, which is written in the order the fetch unit
-     sees it; 16-bit immediates INSIDE an instruction are little-endian, and
-     the generated place list has already put their bytes where they go.  */
+  /* Byte 0 of the instruction is the most significant end of the word, which
+     is the order the fetch unit sees.  Immediates inside an instruction are
+     little endian, and the generated place list has already put their bytes
+     where they go.  */
   for (i = 0; i < nbytes; i++)
     buf[i] = (word >> (8 * (nbytes - 1 - i))) & 0xff;
 }
@@ -512,8 +502,8 @@ emit_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	continue;
 
       size = o->bits / 8;
-      /* Every relocatable field ends its instruction - asserted over the whole
-	 spec by tools/gen-asm.js - so this is where it starts.  */
+      /* Every relocatable field ends its instruction, which tools/gen-asm.js
+	 asserts over the whole spec, so this is where it starts.  */
       fix_new_exp (frag_now,
 		   buf - frag_now->fr_literal + f->nbytes - size,
 		   size, &sv[i].ex, o->pcrel, reloc_of (o->reloc));
@@ -524,10 +514,10 @@ emit_form (const fructus_form *f, struct slotval *sv, struct matched *m)
    Aliases
    ========================================================================= */
 
-/* An alias captures each operand's TEXT unexamined and pastes it into the line
+/* An alias captures each operand's text unexamined and pastes it into the line
    the target instruction would have been written as.  No types are involved,
-   which is why `sub rd, ra, #imm' can become `add rd, ra, #-(imm)' with the
-   negation done by the expression parser on the second pass.  */
+   so `sub rd, ra, #imm' becomes `add rd, ra, #-(imm)' with the negation done
+   by the expression parser on the second pass.  */
 
 static char *
 capture (char *s, const char *stop, int *len)
@@ -535,12 +525,10 @@ capture (char *s, const char *stop, int *len)
   char *start = s;
   int depth = 0;
 
-  /* A captured operand never begins with `#'.  Wherever an immediate is
-     allowed the syntax spells the `#' out as a literal, so a capture that
-     starts with one means this alias is the wrong shape - which is what tells
+  /* A captured operand never begins with `#': wherever an immediate is allowed
+     the syntax spells the `#' out as a literal.  That is what tells
      `sub rd, ra, #7' apart from `sub rd, ra, rb' when neither capture is
-     typed.  Without this the three-register alias matches first and rewrites
-     to `rsb rd, #7, ra'.  */
+     typed.  */
   if (*s == '#')
     {
       *len = 0;
@@ -611,11 +599,9 @@ match_alias (const fructus_alias *a, char *line, char **cap, int *caplen)
    md_begin
    ========================================================================= */
 
-/* Find the one instruction that has two widths of the same PC-relative field.
+/* Find the one instruction with two widths of the same pc-relative field.
    Detected from the table rather than by name, and required to be unique: a
-   second relaxable pair would need a second pair of states in md_relax_table,
-   and silently assembling it at the wrong width is exactly the failure this
-   refuses to have.  */
+   second relaxable pair would need its own state pair in md_relax_table.  */
 
 static void
 find_relax_pair (void)
@@ -847,7 +833,7 @@ assemble_line (char *str, int depth)
 
   args = skip_ws (op_end);
 
-  /* SHORTEST FIRST.  The table is sorted, so the first form that accepts these
+  /* The table is sorted shortest first, so the first form that accepts these
      operands is the smallest one that can encode them.  */
   if (mn != NULL)
     for (i = 0; i < mn->n; i++)
@@ -879,7 +865,7 @@ assemble_line (char *str, int depth)
 
   if (best == NULL)
     {
-      /* No encoding took these operands.  An alias might still: `mov rd, rs'
+      /* No encoding took these operands; an alias still might.  `mov rd, rs'
 	 has no form of its own and becomes `or rd, rs, #0'.  */
       if (al != NULL)
 	assemble_alias (al, args, depth);
@@ -1005,15 +991,11 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED, fixS *fixp)
   rel->address = fixp->fx_frag->fr_address + fixp->fx_where;
   rel->addend = fixp->fx_offset;
 
-  /* THE PC-RELATIVE BIAS.  The linker computes S + A - P with P the address of
-     the FIELD, because pcrel_offset is true in the howto.  A Fructus
-     displacement is relative to the address of the NEXT INSTRUCTION, and every
-     PC-relative field ends its instruction - tools/gen-asm.js asserts that over
-     the whole spec - so the next instruction is at P + fx_size, and the
-     difference goes in the addend.
-
-     Get this wrong and branches through a relocation come out off by an
-     instruction length: they assemble clean and fail at run time.  */
+  /* The linker computes S + A - P with P the address of the field, since
+     pcrel_offset is true in the howto.  A Fructus displacement is relative to
+     the address of the next instruction, and every pc-relative field ends its
+     instruction - tools/gen-asm.js asserts that over the whole spec - so the
+     next instruction is at P + fx_size and the difference goes in the addend.  */
   if (fixp->fx_pcrel)
     rel->addend -= fixp->fx_size;
 
@@ -1032,7 +1014,7 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED, fixS *fixp)
 long
 md_pcrel_from (fixS *fixP)
 {
-  /* The address of the next instruction.  Uniform because every PC-relative
+  /* The address of the next instruction.  Uniform because every pc-relative
      field ends the instruction it sits in.  */
   return fixP->fx_where + fixP->fx_frag->fr_address + fixP->fx_size;
 }

@@ -18,8 +18,8 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* Fructus is a 16-bit machine in an elf32 container.  There is no GOT, no PLT,
-   no dynamic linking and no MMU, so this file is very nearly the minimum an
-   ELF backend can be: five relocations, the two lookups, and a relocate_section
+   no dynamic linking and no MMU, so this file is nearly the minimum an ELF
+   backend can be: five relocations, the two lookups, and a relocate_section
    that hands everything to _bfd_final_link_relocate.
 
    All four real relocations are generic - see include/elf/fructus.h.  */
@@ -30,13 +30,12 @@
 #include "elf-bfd.h"
 #include "elf/fructus.h"
 
-/* THE PC-RELATIVE BIAS.  `pcrel_offset' is true, so the linker computes
-   S + A - P with P the address of the FIELD.  Fructus displacements are
-   relative to the address of the NEXT INSTRUCTION, and the difference is
-   carried in the addend: gas subtracts fx_size in tc_gen_reloc, which works
-   uniformly because every PC-relative field ends the instruction it sits in.
-   tools/gen-opcodes.js asserts that property over the whole spec, so it is
-   checked rather than assumed.  */
+/* `pcrel_offset' is true, so the linker computes S + A - P with P the address
+   of the field.  A Fructus displacement is relative to the address of the next
+   instruction, and the difference is carried in the addend: gas subtracts
+   fx_size in tc_gen_reloc, which works uniformly because every pc-relative
+   field ends the instruction it sits in.  tools/gen-asm.js asserts that over
+   the whole spec.  */
 
 static reloc_howto_type fructus_elf_howto_table [] =
 {
@@ -64,8 +63,8 @@ static reloc_howto_type fructus_elf_howto_table [] =
 
   /* A 16-bit absolute address: jmp, call, mov rd/#imm16, and dw.  Stored low
      byte first, which is what the generic reloc does on a little-endian
-     target - no special function needed.  No overflow check is possible or
-     wanted: the address space IS 16 bits, so every value is in range.  */
+     target.  The address space is 16 bits, so every value is in range and
+     there is nothing to complain about.  */
   HOWTO (R_FRUCTUS_16,
 	 0, 2, 16, false, 0,
 	 complain_overflow_dont,
@@ -73,8 +72,8 @@ static reloc_howto_type fructus_elf_howto_table [] =
 	 "R_FRUCTUS_16",
 	 false, 0, 0xffff, false),
 
-  /* An 8-bit signed displacement from the next instruction: every conditional
-     branch, and the short jmpr.  -128..+127, and out of range is a link error
+  /* An 8-bit signed displacement from the next instruction, -128..+127: every
+     conditional branch, and the short jmpr.  Out of range is a link error
      rather than a silent wrap.  */
   HOWTO (R_FRUCTUS_8_PCREL,
 	 0, 1, 8, true, 0,
@@ -84,9 +83,8 @@ static reloc_howto_type fructus_elf_howto_table [] =
 	 false, 0, 0x00ff, true),
 
   /* A 16-bit signed displacement from the next instruction: the long jmpr,
-     and callr.  In a 16-bit address space this always fits, but keep the
-     signed complaint anyway - it is what catches a relocation applied to the
-     wrong field.  */
+     and callr.  In a 16-bit address space this always fits; the signed
+     complaint is kept to catch a relocation applied to the wrong field.  */
   HOWTO (R_FRUCTUS_16_PCREL,
 	 0, 2, 16, true, 0,
 	 complain_overflow_signed,
@@ -162,9 +160,7 @@ fructus_info_to_howto_rela (bfd *abfd,
 }
 
 /* Relocate a Fructus ELF section.  Every relocation here is generic, so this
-   is the standard walk with _bfd_final_link_relocate doing the arithmetic;
-   there is no fructus_final_link_relocate because there is nothing for it to
-   special-case.  */
+   is the standard walk with _bfd_final_link_relocate doing the arithmetic.  */
 
 static int
 fructus_elf_relocate_section (struct bfd_link_info *info,
@@ -285,8 +281,8 @@ fructus_elf_relocate_section (struct bfd_link_info *info,
 #define ELF_MACHINE_CODE	EM_FRUCTUS
 
 /* No MMU, and 64 KiB of address space in total.  A 4 KiB page size would let
-   the linker spend most of the machine on alignment padding, so say 4 - which
-   is the section alignment the arch declares.  msp430 does the same.  */
+   the linker spend most of the machine on alignment padding, so this is 4,
+   matching the section alignment the arch declares.  msp430 does the same.  */
 #define ELF_MAXPAGESIZE		4
 
 #define TARGET_LITTLE_SYM	fructus_elf32_vec

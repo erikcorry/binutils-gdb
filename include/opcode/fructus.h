@@ -11,33 +11,29 @@
 #ifndef _FRUCTUS_H_
 #define _FRUCTUS_H_
 
-/* Every instruction's length is a function of its FIRST BYTE alone - that is a
-   documented commitment of the ISA, not an accident of the current encoding -
-   so this table is flat and indexed directly by that byte.  An unused opcode
-   has a NULL name and a length of 0.  */
+/* Every instruction's length is a function of its first byte alone - a
+   documented commitment of the ISA - so this table is flat and indexed
+   directly by that byte.  An unused opcode has a NULL name and a length of
+   0.  */
 
 typedef struct fructus_opc_info_t
 {
   unsigned char  length;    /* 1, 2 or 3; 0 if the opcode is unused */
   unsigned char  itype;     /* operand layout - one of the FRUCTUS_* below */
-  unsigned char  pcrel;     /* 1 if its immediate is a DISPLACEMENT */
+  unsigned char  pcrel;     /* 1 if its immediate is a displacement */
   const char *   name;      /* mnemonic, or NULL */
 } fructus_opc_info_t;
 
-/* WHY pcrel IS A FIELD AND NOT PART OF THE itype.  An itype is a bit LAYOUT,
+/* pcrel is a field rather than part of the itype.  An itype is a bit layout,
    and `jmpr rel16' and `jmp abs16' have the same one: a whole opcode byte then
    a 16-bit immediate, low byte first.  What differs is what the immediate
-   MEANS, and a disassembler that ignores the difference prints the raw
-   displacement where an address belongs - a listing that looks right and names
-   the wrong place.  Two itypes would say the layouts differ, which would be a
-   lie; this says the layouts are the same and the reading is not.  */
+   means, so the layouts stay one itype and the reading is recorded here.  */
 
 extern const fructus_opc_info_t fructus_opc_info[256];
 
 /* The operand layouts, derived from the encodings rather than named by hand.
    Two forms with the same layout share an itype even when they are different
-   instructions, which is exactly what a disassembler wants: the layout decides
-   how to print, the name decides what to call it.  */
+   instructions.  */
 
 enum fructus_itype
 {
@@ -61,17 +57,16 @@ enum fructus_itype
   FRUCTUS_3B_INT16_REG           = 17
 };
 
-/* An INDEX IS NOT A VALUE.  Byte 1 of `add rd, ra, #imm3` holds 6 and the
-   programmer wrote #8; a disassembler without these tables prints the index and
-   lies.  imm3 and shift3 are the same bits read through different tables, which
-   is why both are here.  */
+/* An index is not a value: byte 1 of `add rd, ra, #imm3` holds 6 where the
+   programmer wrote #8.  imm3 and shift3 are the same bits read through
+   different tables, which is why both are here.  */
 
 extern const unsigned short fructus_imm3[8];
 extern const unsigned short fructus_shift3[8];
 extern const unsigned short fructus_immbit5[32];
 extern const unsigned short fructus_immask5[32];
 
-/* condimm5 packs a CONDITION and a CONSTANT into five bits.  Both halves are
+/* condimm5 packs a condition and a constant into five bits.  Both halves are
    needed to print one, so they come as parallel arrays.  */
 extern const char * const  fructus_condimm5_cond[32];
 extern const short         fructus_condimm5_imm[32];

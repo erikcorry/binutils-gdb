@@ -15,34 +15,24 @@
 #include "disassemble.h"
 
 /* Fructus is byte-granular and variable length, and an instruction's length is
-   a function of its FIRST BYTE alone.  That is a documented commitment of the
-   ISA, so this disassembler never looks ahead: read one byte, learn the length,
-   read the rest.  Nothing here has to resynchronise.
+   a function of its first byte alone - a documented commitment of the ISA - so
+   this disassembler reads one byte, learns the length, and reads the rest.
 
-   PRINTING IS DRIVEN BY THE SPEC'S OWN SYNTAX.  fructus_form_by_opcode takes a
-   first byte to a row of the generated form table, and that row carries both
-   the syntax to print and the bit positions to read - so this file contains no
-   per-instruction format strings at all.
+   Printing is driven by the spec's own syntax: an opcode selects a row of the
+   generated form table, and that row carries both the syntax to print and the
+   bit positions to read, so this file holds no per-instruction format strings.
 
-   That is not tidiness, it is the fix for a bug that recurred three times.  An
-   itype is a bit LAYOUT and not a syntax, and several layouts serve more than
-   one syntax:
+   The syntax is what a printer needs, because an itype is a bit layout and one
+   layout serves several syntaxes:
 
-     ld rd, [ra, #imm3]   and  add rd, ra, #imm3      one layout, brackets or not
-     mov rd, #immbit5     and  add rd, rd, #immbit5   one layout, two operands or three
-     add r0, r0, #1                                   pinned - a bare mnemonic is
-                                                      not reassemblable
+     ld rd, [ra, #imm3]   and  add rd, ra, #imm3      brackets or not
+     mov rd, #immbit5     and  add rd, rd, #immbit5   two operands or three
+     add r0, r0, #1                                   all three pinned  */
 
-   A printer keyed on the layout gets the punctuation of whichever instruction
-   it was written for and is wrong for the rest.  Keyed on the syntax it cannot
-   be.  */
-
-/* WHICH FORM.  Length is a function of byte 0 - the ISA commits to that - but
-   THE MNEMONIC IS NOT: the unary block packs sxt8, clz and popcount into opcode
-   0x32 and separates them with two bits of byte 1.  So byte 0 selects a list
-   and byte 1 picks from it, first match winning, in the same order
-   tools/decode.js tries them.  A flat 256-entry name table disassembles clz as
-   sxt8, which is a plausible-looking listing naming the wrong instruction.  */
+/* Length is a function of byte 0, which the ISA commits to; the mnemonic is
+   not.  The unary block packs sxt8, clz and popcount into opcode 0x32 and
+   separates them with two bits of byte 1.  So byte 0 selects a list and byte 1
+   picks from it, first match winning, in the order tools/decode.js tries.  */
 
 static const fructus_form *
 fructus_form_for (unsigned char b0, unsigned char b1)
@@ -78,8 +68,8 @@ print_operands (struct disassemble_info *info, const fructus_opc_info_t *op,
   word >>= 8 * (3 - f->nbytes);
 
   /* Pull each slot's value out.  A pinned slot carries the value the form fixes
-     it at; a tied one repeats another slot, which is why ties are resolved in a
-     second pass.  */
+     it at; a tied one repeats another slot, so ties are resolved in a second
+     pass.  */
   for (i = 0; i < f->nslots; i++)
     v[i] = f->slots[i].fixed ? f->slots[i].value : 0;
   for (k = 0; k < f->nplaces; k++)
@@ -216,13 +206,12 @@ print_insn_fructus (bfd_vma addr, struct disassemble_info *info)
   {
     const fructus_form *f = fructus_form_for (buf[0], buf[1]);
 
-    /* The NAME comes from the form, not from the 256-entry table: three unary
+    /* The name comes from the form, not from the 256-entry table: three unary
        ops share opcode 0x32.  */
     fpr (stream, dis_style_mnemonic, "%s", f != NULL ? f->mnemonic : op->name);
 
-    /* Whether there are operands to print is a property of the SYNTAX, not of
-       the length: `add r0, r0, #1' is one byte with all three operands pinned,
-       and printing it as a bare `add' gives a listing that will not reassemble.
+    /* Whether there are operands to print is a property of the syntax, not of
+       the length:  eg. `add r0, r0, #1' is 1 byte but has three arguments.
        Only ret, nop, halt and the like have no syntax at all.  */
     if (f != NULL && f->syntax[0] != '\0')
       {

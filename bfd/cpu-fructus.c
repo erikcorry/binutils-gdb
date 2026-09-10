@@ -21,13 +21,13 @@
 #include "bfd.h"
 #include "libbfd.h"
 
-/* Sixteen bits in a word AND sixteen in an address, inside an elf32
+/* Sixteen bits in a word and sixteen in an address, inside an elf32
    container.  elf32 is the file format, unrelated to the target register width.
 
    Section alignment power is 1.  Instructions are byte-granular and the
    hardware permits unaligned loads with no penalty - see the memory notes in
-   isa/fructus.toml - so nothing REQUIRES two, but 16-bit data is the common
-   case and a default of one costs at most a byte per section.  */
+   isa/fructus.toml - but 16-bit data is the common case, and a default of one
+   costs at most a byte per section.  */
 
 const bfd_arch_info_type bfd_fructus_arch =
 {

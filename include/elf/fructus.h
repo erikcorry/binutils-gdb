@@ -24,13 +24,13 @@
 
 /* Relocation types.  Fructus needs no relocation of its own: every address in
    a Fructus program is a plain 8- or 16-bit field, absolute or relative to the
-   address of the NEXT instruction, so these four are the generic ones under
-   local names.  See isa/fructus.toml's [[reloc]] entries, which are what the
+   address of the next instruction, so these four are the generic ones under
+   local names.  See isa/fructus.toml's [[reloc]] entries, which the
    assembler's table is generated from.
 
-   The PCREL pair are biased to the end of the instruction, not to the field's
-   own address - `pcrel_offset' true in the howto, and md_pcrel_from returning
-   the address after the instruction, are the two halves of saying so.  */
+   The pc-relative pair are biased to the end of the instruction rather than to
+   the field's own address; `pcrel_offset' true in the howto, and md_pcrel_from
+   returning the address after the instruction, are the two halves of that.  */
 START_RELOC_NUMBERS (elf_fructus_reloc_type)
   RELOC_NUMBER (R_FRUCTUS_NONE,      0)
   RELOC_NUMBER (R_FRUCTUS_8,         1)  /* #d8, and any 8-bit datum.  */

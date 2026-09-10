@@ -11,10 +11,10 @@
 #ifndef _FRUCTUS_ASM_H_
 #define _FRUCTUS_ASM_H_
 
-/* THE FORM TABLE.  One row per (instruction, encoding form), sorted shortest
+/* The form table: one row per (instruction, encoding form), sorted shortest
    first, and gas takes the first row that accepts what the programmer wrote.
-   That ordering IS the "prefer the smaller encoding" rule - there is no size
-   search in the assembler, and no mnemonic is special-cased anywhere in it.  */
+   That ordering is the "prefer the smaller encoding" rule; there is no size
+   search in the assembler.  */
 
 /* How an operand is written.  FR_CC and FR_CK are the two halves of a
    condimm5, which is written as a condition and a constant in different places
@@ -86,16 +86,15 @@ typedef struct fructus_form
 extern const fructus_form fructus_forms[];
 extern const unsigned int fructus_nforms;
 
-/* Which rows a first byte can decode to.  A LIST, because the mnemonic is not a
-   function of byte 0: length is - the ISA commits to that - but the unary block
-   packs sxt8, clz and popcount into opcode 0x32 and separates them with two
-   bits of byte 1.  Each entry carries the byte-1 mask and match that selects
-   it, and the first match wins.
+/* Which rows a first byte can decode to.  A list, because the mnemonic is not a
+   function of byte 0: length is - the ISA commits to that - while the unary
+   block packs sxt8, clz and popcount into opcode 0x32 and separates them with
+   two bits of byte 1.  Each entry carries the byte-1 mask and match that
+   selects it, and the first match wins.
 
-   Printing through the row's SYNTAX is what makes a listing reassemblable.  An
-   itype is a bit layout and not a syntax, so `ld rd, [ra, #imm3]' and
-   `add rd, ra, #imm3' share one, and a printer driven by the layout puts an
-   ALU op's punctuation on a load.  */
+   Printing through the row's syntax is what makes a listing reassemblable: an
+   itype is a bit layout, and `ld rd, [ra, #imm3]' and `add rd, ra, #imm3'
+   share one.  */
 typedef struct fructus_cand
 {
   unsigned char mask;		/* which bits of byte 1 select this row */
@@ -121,9 +120,9 @@ typedef struct fructus_condimm
 extern const fructus_condimm fructus_condimm_accept[];
 extern const unsigned int fructus_ncondimm_accept;
 
-/* An alias is a pure TEXT rewrite - it captures each operand's text unexamined
-   and builds the line the target would have been written as, then ordinary
-   form selection runs on that.  No types are involved.  */
+/* An alias is a text rewrite: it captures each operand's text unexamined and
+   builds the line the target would have been written as, then ordinary form
+   selection runs on that.  No types are involved.  */
 typedef struct fructus_alias
 {
   const char *  mnemonic;
@@ -135,15 +134,14 @@ typedef struct fructus_alias
 extern const fructus_alias fructus_aliases[];
 extern const unsigned int fructus_naliases;
 
-/* Every spelling of a register and of a condition the assembler accepts, flat.
-   Flat rather than indexed by encoding because the map is not one-to-one:
-   `cs' and `hs' both encode as `ls', and an array with one name per index
-   would silently drop one of them.
+/* Every spelling of a register and of a condition the assembler accepts, flat
+   rather than indexed by encoding because the map is not one-to-one: `cs' and
+   `hs' both encode as `ls'.
 
-   A condition's `swapped' flag says it is a MIRRORED spelling - `br gt, ra,
-   rb, L' is `br lt, rb, ra, L'.  cond3 carries an operand-order bit, which is
-   how twelve spellings fit into eight encodings; a form marked swapped reads
-   only these and has its register places already exchanged.  */
+   A condition's `swapped' flag marks a mirrored spelling: `br gt, ra, rb, L'
+   is `br lt, rb, ra, L'.  cond3 carries an operand-order bit, which is how
+   twelve spellings fit into eight encodings; a form marked swapped reads only
+   these and has its register places already exchanged.  */
 typedef struct fructus_name
 {
   const char *  name;
