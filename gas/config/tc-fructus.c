@@ -1020,6 +1020,44 @@ md_pcrel_from (fixS *fixP)
 }
 
 /* =========================================================================
+   Local labels
+   ========================================================================= */
+
+/* The most recent label whose name does not start with `.'; a `.name' after
+   it means `scope.name'.  Two kinds of dot name are left alone: `.L' names,
+   which are gas's and GCC's own local labels, and section names, whose
+   symbols pass through here too.  */
+static char *label_scope;
+
+char *
+fructus_canonicalize_symbol_name (char *name)
+{
+  if (name[0] != '.' || name[1] == '\0' || name[1] == 'L'
+      || label_scope == NULL
+      || (stdoutput != NULL && bfd_get_section_by_name (stdoutput, name)))
+    return name;
+  return notes_concat (label_scope, name, (char *) NULL);
+}
+
+void
+fructus_frob_label (symbolS *sym)
+{
+  const char *name = S_GET_NAME (sym);
+
+  /* The name has already been through fructus_canonicalize_symbol_name, so a
+     local arrives as `scope.name' and must not become a scope itself.  */
+  if (name[0] == '.')
+    return;
+  if (label_scope != NULL)
+    {
+      size_t n = strlen (label_scope);
+      if (strncmp (name, label_scope, n) == 0 && name[n] == '.')
+	return;
+    }
+  label_scope = notes_strdup (name);
+}
+
+/* =========================================================================
    Odds and ends
    ========================================================================= */
 

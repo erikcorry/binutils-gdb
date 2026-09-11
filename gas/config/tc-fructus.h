@@ -42,3 +42,13 @@
    single encoding once its operands are known.  */
 #define TC_GENERIC_RELAX_TABLE md_relax_table
 extern const relax_typeS md_relax_table[];
+
+/* customasm's local labels: `.loop' written after `memcpy:' is the symbol
+   `memcpy.loop', and can be reached by that name from anywhere.  The spec's
+   own snippets and libraries are written that way, and gas has to read them
+   the same way customasm does or two functions in one file cannot both have
+   a `.done'.  */
+#define tc_canonicalize_symbol_name(NAME) fructus_canonicalize_symbol_name (NAME)
+extern char *fructus_canonicalize_symbol_name (char *);
+#define tc_frob_label(SYM) fructus_frob_label (SYM)
+extern void fructus_frob_label (symbolS *);
