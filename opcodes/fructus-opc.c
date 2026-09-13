@@ -15,9 +15,9 @@ const fructus_opc_info_t fructus_opc_info[256] =
   {
     { 1, FRUCTUS_1B_NONE, 0, "halt" },                      /* 0x00 */
     { 1, FRUCTUS_1B_NONE, 0, "ret" },                       /* 0x01 */
-    { 1, FRUCTUS_1B_NONE, 0, "ld" },                        /* 0x02 */
-    { 1, FRUCTUS_1B_NONE, 0, "ld8" },                       /* 0x03 */
-    { 1, FRUCTUS_1B_NONE, 0, "add" },                       /* 0x04 */
+    { 1, FRUCTUS_1B_NONE, 0, "jmp" },                       /* 0x02 */
+    { 1, FRUCTUS_1B_NONE, 0, "ld" },                        /* 0x03 */
+    { 1, FRUCTUS_1B_NONE, 0, "ld8" },                       /* 0x04 */
     { 1, FRUCTUS_1B_NONE, 0, "add" },                       /* 0x05 */
     { 1, FRUCTUS_1B_NONE, 0, "add" },                       /* 0x06 */
     { 1, FRUCTUS_1B_NONE, 0, "add" },                       /* 0x07 */
@@ -146,7 +146,7 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 1, FRUCTUS_1B_NONE, 0, "or" },                        /* 0x82 */
     { 1, FRUCTUS_1B_NONE, 0, "mov" },                       /* 0x83 */
     { 1, FRUCTUS_1B_NONE, 0, "xor" },                       /* 0x84 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x85 */
+    { 1, FRUCTUS_1B_NONE, 0, "add" },                       /* 0x85 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x86 */
     { 1, FRUCTUS_1B_NONE, 0, "nop" },                       /* 0x87 */
     { 3, FRUCTUS_3B_INT16_REG, 0, "mov" },                  /* 0x88 */
