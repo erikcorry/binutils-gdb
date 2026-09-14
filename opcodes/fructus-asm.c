@@ -439,141 +439,142 @@ static const fructus_opnd sl56[] =
 static const fructus_place pl56[] =
   { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
-/* zxt8/reg_reg */
+/* clz/reg_reg */
 static const fructus_opnd sl57[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
 static const fructus_place pl57[] =
   { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
-/* clz/reg_reg */
+/* bitrev/reg_reg */
 static const fructus_opnd sl58[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
 static const fructus_place pl58[] =
   { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
-/* bitrev/reg_reg */
+/* popcount/reg_reg */
 static const fructus_opnd sl59[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
 static const fructus_place pl59[] =
   { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
-/* popcount/reg_reg */
-static const fructus_opnd sl60[] =
-  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl60[] =
-  { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
-
 /* iseq/three_reg */
-static const fructus_opnd sl61[] =
+static const fructus_opnd sl60[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl61[] =
+static const fructus_place pl60[] =
   { { 2, 0, 1, 8 }, { 2, 1, 2, 6 }, { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
 /* iseq/reg_imm5 */
-static const fructus_opnd sl62[] =
+static const fructus_opnd sl61[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, 0, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_NONE, 5, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl62[] =
+static const fructus_place pl61[] =
   { { 2, 0, 5, 3 }, { 0, 0, 3, 0 } };
 
 /* iseq/reg_reg_imm3 */
-static const fructus_opnd sl63[] =
+static const fructus_opnd sl62[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_TABLE, FR_T_IMM3, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl63[] =
+static const fructus_place pl62[] =
   { { 2, 0, 1, 8 }, { 2, 1, 2, 6 }, { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
 /* isset/reg_immbit5 */
-static const fructus_opnd sl64[] =
+static const fructus_opnd sl63[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, 0, 0, 0 },
     { FR_TABLE, FR_T_IMMBIT5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl64[] =
+static const fructus_place pl63[] =
   { { 2, 0, 5, 3 }, { 0, 0, 3, 0 } };
 
 /* isset/reg_immask5 */
-static const fructus_opnd sl65[] =
+static const fructus_opnd sl64[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, 0, 0, 0 },
     { FR_TABLE, FR_T_IMMASK5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl65[] =
+static const fructus_place pl64[] =
   { { 2, 0, 5, 3 }, { 0, 0, 3, 0 } };
 
 /* push8/single */
+static const fructus_opnd sl65[] =
+  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
+static const fructus_place pl65[] =
+  { { 0, 0, 3, 0 } };
+
+/* push/single */
 static const fructus_opnd sl66[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
 static const fructus_place pl66[] =
   { { 0, 0, 3, 0 } };
 
-/* push/single */
-static const fructus_opnd sl67[] =
-  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl67[] =
-  { { 0, 0, 3, 0 } };
-
 /* push/double */
-static const fructus_opnd sl68[] =
+static const fructus_opnd sl67[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl68[] =
+static const fructus_place pl67[] =
   { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
 /* push/triple */
-static const fructus_opnd sl69[] =
+static const fructus_opnd sl68[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl69[] =
+static const fructus_place pl68[] =
   { { 2, 0, 1, 8 }, { 2, 1, 2, 6 }, { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
 /* pop8/single */
+static const fructus_opnd sl69[] =
+  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
+static const fructus_place pl69[] =
+  { { 0, 0, 3, 0 } };
+
+/* pop/single */
 static const fructus_opnd sl70[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
 static const fructus_place pl70[] =
   { { 0, 0, 3, 0 } };
 
-/* pop/single */
-static const fructus_opnd sl71[] =
-  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl71[] =
-  { { 0, 0, 3, 0 } };
-
 /* pop/double */
-static const fructus_opnd sl72[] =
+static const fructus_opnd sl71[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl72[] =
+static const fructus_place pl71[] =
   { { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
 /* pop/triple */
-static const fructus_opnd sl73[] =
+static const fructus_opnd sl72[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl73[] =
+static const fructus_place pl72[] =
   { { 2, 0, 1, 8 }, { 2, 1, 2, 6 }, { 1, 0, 3, 3 }, { 0, 0, 3, 0 } };
 
 /* jmpr/rel8 */
-static const fructus_opnd sl74[] =
+static const fructus_opnd sl73[] =
   { { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl74[] =
+static const fructus_place pl73[] =
   { { 0, 0, 8, 0 } };
 
 /* call/reg */
-static const fructus_opnd sl75[] =
+static const fructus_opnd sl74[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 } };
-static const fructus_place pl75[] =
+static const fructus_place pl74[] =
   { { 0, 0, 3, 0 } };
 
 /* ld8/reg_reg10 */
+static const fructus_opnd sl75[] =
+  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_INT, FR_T_NONE, FR_R_NONE, 10, 1, 0, 0, -1, 0, 0 } };
+static const fructus_place pl75[] =
+  { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
+
+/* ld/reg_reg10 */
 static const fructus_opnd sl76[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -581,7 +582,7 @@ static const fructus_opnd sl76[] =
 static const fructus_place pl76[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* ld/reg_reg10 */
+/* st8/reg_reg10 */
 static const fructus_opnd sl77[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -589,7 +590,7 @@ static const fructus_opnd sl77[] =
 static const fructus_place pl77[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* st8/reg_reg10 */
+/* st/reg_reg10 */
 static const fructus_opnd sl78[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -597,22 +598,22 @@ static const fructus_opnd sl78[] =
 static const fructus_place pl78[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* st/reg_reg10 */
+/* mov/reg_imm16 */
 static const fructus_opnd sl79[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_INT, FR_T_NONE, FR_R_NONE, 10, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl79[] =
-  { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
-
-/* mov/reg_imm16 */
-static const fructus_opnd sl80[] =
-  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_16, 16, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl80[] =
+static const fructus_place pl79[] =
   { { 0, 0, 3, 16 }, { 1, 0, 8, 8 }, { 1, 8, 8, 0 } };
 
 /* add/reg_reg_imm10 */
+static const fructus_opnd sl80[] =
+  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_INT, FR_T_NONE, FR_R_NONE, 10, 1, 0, 0, -1, 0, 0 } };
+static const fructus_place pl80[] =
+  { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
+
+/* rsb/reg_reg_imm10 */
 static const fructus_opnd sl81[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -620,7 +621,7 @@ static const fructus_opnd sl81[] =
 static const fructus_place pl81[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* rsb/reg_reg_imm10 */
+/* xor/reg_reg_imm10 */
 static const fructus_opnd sl82[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -628,7 +629,7 @@ static const fructus_opnd sl82[] =
 static const fructus_place pl82[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* xor/reg_reg_imm10 */
+/* or/reg_reg_imm10 */
 static const fructus_opnd sl83[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -636,7 +637,7 @@ static const fructus_opnd sl83[] =
 static const fructus_place pl83[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* or/reg_reg_imm10 */
+/* and/reg_reg_imm10 */
 static const fructus_opnd sl84[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -644,130 +645,122 @@ static const fructus_opnd sl84[] =
 static const fructus_place pl84[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
-/* and/reg_reg_imm10 */
-static const fructus_opnd sl85[] =
-  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_INT, FR_T_NONE, FR_R_NONE, 10, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl85[] =
-  { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
-
 /* br8/cond_reg_reg */
-static const fructus_opnd sl86[] =
+static const fructus_opnd sl85[] =
   { { FR_COND, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
+static const fructus_place pl85[] =
+  { { 1, 0, 1, 16 }, { 1, 1, 2, 14 }, { 2, 0, 3, 11 }, { 0, 0, 3, 8 }, { 3, 0, 8, 0 } };
+
+/* br8/cond_reg_reg swapped */
+static const fructus_opnd sl86[] =
+  { { FR_COND, FR_T_NONE, FR_R_NONE, 0, 0, 0, 1, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
 static const fructus_place pl86[] =
-  { { 1, 0, 1, 16 }, { 1, 1, 2, 14 }, { 2, 0, 3, 11 }, { 0, 0, 3, 8 }, { 3, 0, 8, 0 } };
-
-/* br8/cond_reg_reg swapped */
-static const fructus_opnd sl87[] =
-  { { FR_COND, FR_T_NONE, FR_R_NONE, 0, 0, 0, 1, -1, 0, 0 },
-    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl87[] =
   { { 2, 0, 1, 16 }, { 2, 1, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 3, 0, 8, 0 } };
 
 /* br8/cond_reg_imm */
-static const fructus_opnd sl88[] =
+static const fructus_opnd sl87[] =
   { { FR_CC, FR_T_NONE, FR_R_NONE, 8, 0, 0, 0, -1, 0, 0 },
     { FR_CK, FR_T_NONE, FR_R_NONE, 8, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl88[] =
+static const fructus_place pl87[] =
   { { 0, 0, 5, 11 }, { 2, 0, 3, 8 }, { 3, 0, 8, 0 } };
 
 /* br/cond_reg_reg */
-static const fructus_opnd sl89[] =
+static const fructus_opnd sl88[] =
   { { FR_COND, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl89[] =
+static const fructus_place pl88[] =
   { { 1, 0, 1, 16 }, { 1, 1, 2, 14 }, { 2, 0, 3, 11 }, { 0, 0, 3, 8 }, { 3, 0, 8, 0 } };
 
 /* br/cond_reg_reg swapped */
-static const fructus_opnd sl90[] =
+static const fructus_opnd sl89[] =
   { { FR_COND, FR_T_NONE, FR_R_NONE, 0, 0, 0, 1, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl90[] =
+static const fructus_place pl89[] =
   { { 2, 0, 1, 16 }, { 2, 1, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 3, 0, 8, 0 } };
 
 /* br/cond_reg_imm */
-static const fructus_opnd sl91[] =
+static const fructus_opnd sl90[] =
   { { FR_CC, FR_T_NONE, FR_R_NONE, 16, 0, 0, 0, -1, 0, 0 },
     { FR_CK, FR_T_NONE, FR_R_NONE, 16, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl91[] =
+static const fructus_place pl90[] =
   { { 0, 0, 5, 11 }, { 2, 0, 3, 8 }, { 3, 0, 8, 0 } };
 
 /* brclear/reg_mask */
-static const fructus_opnd sl92[] =
+static const fructus_opnd sl91[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_TABLE, FR_T_IMMBIT5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
+static const fructus_place pl91[] =
+  { { 1, 0, 5, 11 }, { 0, 0, 3, 8 }, { 2, 0, 8, 0 } };
+
+/* brclear/reg_mask5 */
+static const fructus_opnd sl92[] =
+  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_TABLE, FR_T_IMMASK5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
 static const fructus_place pl92[] =
   { { 1, 0, 5, 11 }, { 0, 0, 3, 8 }, { 2, 0, 8, 0 } };
 
-/* brclear/reg_mask5 */
+/* brset/reg_mask */
 static const fructus_opnd sl93[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_TABLE, FR_T_IMMASK5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_TABLE, FR_T_IMMBIT5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
 static const fructus_place pl93[] =
   { { 1, 0, 5, 11 }, { 0, 0, 3, 8 }, { 2, 0, 8, 0 } };
 
-/* brset/reg_mask */
+/* brset/reg_mask5 */
 static const fructus_opnd sl94[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_TABLE, FR_T_IMMBIT5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
+    { FR_TABLE, FR_T_IMMASK5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
 static const fructus_place pl94[] =
   { { 1, 0, 5, 11 }, { 0, 0, 3, 8 }, { 2, 0, 8, 0 } };
 
-/* brset/reg_mask5 */
-static const fructus_opnd sl95[] =
-  { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_TABLE, FR_T_IMMASK5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
-    { FR_INT, FR_T_NONE, FR_R_8_PCREL, 8, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl95[] =
-  { { 1, 0, 5, 11 }, { 0, 0, 3, 8 }, { 2, 0, 8, 0 } };
-
 /* iseq/reg_reg_imm10 */
-static const fructus_opnd sl96[] =
+static const fructus_opnd sl95[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_INT, FR_T_NONE, FR_R_NONE, 10, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl96[] =
+static const fructus_place pl95[] =
   { { 2, 0, 2, 14 }, { 1, 0, 3, 11 }, { 0, 0, 3, 8 }, { 2, 2, 8, 0 } };
 
 /* jmpr/rel16 */
-static const fructus_opnd sl97[] =
+static const fructus_opnd sl96[] =
   { { FR_INT, FR_T_NONE, FR_R_16_PCREL, 16, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl97[] =
+static const fructus_place pl96[] =
   { { 0, 0, 8, 8 }, { 0, 8, 8, 0 } };
 
 /* jmp/abs16 */
-static const fructus_opnd sl98[] =
+static const fructus_opnd sl97[] =
   { { FR_INT, FR_T_NONE, FR_R_16, 16, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl98[] =
+static const fructus_place pl97[] =
   { { 0, 0, 8, 8 }, { 0, 8, 8, 0 } };
 
 /* callr/rel16 */
-static const fructus_opnd sl99[] =
+static const fructus_opnd sl98[] =
   { { FR_INT, FR_T_NONE, FR_R_16_PCREL, 16, 1, 1, 0, -1, 0, 0 } };
-static const fructus_place pl99[] =
+static const fructus_place pl98[] =
   { { 0, 0, 8, 8 }, { 0, 8, 8, 0 } };
 
 /* call/abs16 */
-static const fructus_opnd sl100[] =
+static const fructus_opnd sl99[] =
   { { FR_INT, FR_T_NONE, FR_R_16, 16, 1, 0, 0, -1, 0, 0 } };
-static const fructus_place pl100[] =
+static const fructus_place pl99[] =
   { { 0, 0, 8, 8 }, { 0, 8, 8, 0 } };
 
 const fructus_form fructus_forms[] =
@@ -828,54 +821,53 @@ const fructus_form fructus_forms[] =
     { "lsr", "%0, %1, %2", 2, 3, 4, 0x7600, sl53, pl53 },  /* lsr/three_reg */
     { "lsr", "%0, %1, #%2", 2, 3, 2, 0x7000, sl54, pl54 },  /* lsr/reg_imm5 */
     { "lsr", "%0, %1, #%2", 2, 3, 4, 0x7200, sl55, pl55 },  /* lsr/reg_reg_imm3 */
-    { "sxt8", "%0, %1", 2, 2, 2, 0x3200, sl56, pl56 },  /* sxt8/reg_reg */
-    { "zxt8", "%0, %1", 2, 2, 2, 0x3300, sl57, pl57 },  /* zxt8/reg_reg */
-    { "clz", "%0, %1", 2, 2, 2, 0x3240, sl58, pl58 },  /* clz/reg_reg */
-    { "bitrev", "%0, %1", 2, 2, 2, 0x3340, sl59, pl59 },  /* bitrev/reg_reg */
-    { "popcount", "%0, %1", 2, 2, 2, 0x3280, sl60, pl60 },  /* popcount/reg_reg */
-    { "iseq", "%0, %1, %2", 2, 3, 4, 0x7e00, sl61, pl61 },  /* iseq/three_reg */
-    { "iseq", "%0, %1, #%2", 2, 3, 2, 0x7800, sl62, pl62 },  /* iseq/reg_imm5 */
-    { "iseq", "%0, %1, #%2", 2, 3, 4, 0x7a00, sl63, pl63 },  /* iseq/reg_reg_imm3 */
-    { "isset", "%0, %1, #%2", 2, 3, 2, 0x7900, sl64, pl64 },  /* isset/reg_immbit5 */
-    { "isset", "%0, %1, #%2", 2, 3, 2, 0x7d00, sl65, pl65 },  /* isset/reg_immask5 */
-    { "push8", "%0", 2, 1, 1, 0x9100, sl66, pl66 },  /* push8/single */
-    { "push", "%0", 2, 1, 1, 0x9000, sl67, pl67 },  /* push/single */
-    { "push", "%0, %1", 2, 2, 2, 0x9200, sl68, pl68 },  /* push/double */
-    { "push", "%0, %1, %2", 2, 3, 4, 0x9600, sl69, pl69 },  /* push/triple */
-    { "pop8", "%0", 2, 1, 1, 0x9900, sl70, pl70 },  /* pop8/single */
-    { "pop", "%0", 2, 1, 1, 0x9800, sl71, pl71 },  /* pop/single */
-    { "pop", "%0, %1", 2, 2, 2, 0x9a00, sl72, pl72 },  /* pop/double */
-    { "pop", "%0, %1, %2", 2, 3, 4, 0x9e00, sl73, pl73 },  /* pop/triple */
-    { "jmpr", "%0", 2, 1, 1, 0xa400, sl74, pl74 },  /* jmpr/rel8 */
-    { "call", "%0", 2, 1, 1, 0xac00, sl75, pl75 },  /* call/reg */
-    { "ld8", "%0, [%1, #%2]", 3, 3, 4, 0x240000, sl76, pl76 },  /* ld8/reg_reg10 */
-    { "ld", "%0, [%1, #%2]", 3, 3, 4, 0x1c0000, sl77, pl77 },  /* ld/reg_reg10 */
-    { "st8", "%0, [%1, #%2]", 3, 3, 4, 0x140000, sl78, pl78 },  /* st8/reg_reg10 */
-    { "st", "%0, [%1, #%2]", 3, 3, 4, 0x0c0000, sl79, pl79 },  /* st/reg_reg10 */
-    { "mov", "%0, #%1", 3, 2, 3, 0x880000, sl80, pl80 },  /* mov/reg_imm16 */
-    { "add", "%0, %1, #%2", 3, 3, 4, 0x3c0000, sl81, pl81 },  /* add/reg_reg_imm10 */
-    { "rsb", "%0, %1, #%2", 3, 3, 4, 0x440000, sl82, pl82 },  /* rsb/reg_reg_imm10 */
-    { "xor", "%0, %1, #%2", 3, 3, 4, 0x4c0000, sl83, pl83 },  /* xor/reg_reg_imm10 */
-    { "or", "%0, %1, #%2", 3, 3, 4, 0x540000, sl84, pl84 },  /* or/reg_reg_imm10 */
-    { "and", "%0, %1, #%2", 3, 3, 4, 0x5c0000, sl85, pl85 },  /* and/reg_reg_imm10 */
-    { "br8", "%0, %1, %2, %3", 3, 4, 5, 0xae0000, sl86, pl86 },  /* br8/cond_reg_reg */
-    { "br8", "%0, %1, %2, %3", 3, 4, 5, 0xae0000, sl87, pl87 },  /* br8/cond_reg_reg swapped */
-    { "br8", "%0, %2, #%1, %3", 3, 4, 3, 0xa80000, sl88, pl88 },  /* br8/cond_reg_imm */
-    { "br", "%0, %1, %2, %3", 3, 4, 5, 0xa60000, sl89, pl89 },  /* br/cond_reg_reg */
-    { "br", "%0, %1, %2, %3", 3, 4, 5, 0xa60000, sl90, pl90 },  /* br/cond_reg_reg swapped */
-    { "br", "%0, %2, #%1, %3", 3, 4, 3, 0xa00000, sl91, pl91 },  /* br/cond_reg_imm */
-    { "brclear", "%0, #%1, %2", 3, 3, 3, 0xa10000, sl92, pl92 },  /* brclear/reg_mask */
-    { "brclear", "%0, #%1, %2", 3, 3, 3, 0xa50000, sl93, pl93 },  /* brclear/reg_mask5 */
-    { "brset", "%0, #%1, %2", 3, 3, 3, 0xa90000, sl94, pl94 },  /* brset/reg_mask */
-    { "brset", "%0, #%1, %2", 3, 3, 3, 0xad0000, sl95, pl95 },  /* brset/reg_mask5 */
-    { "iseq", "%0, %1, #%2", 3, 3, 4, 0x7c0000, sl96, pl96 },  /* iseq/reg_reg_imm10 */
-    { "jmpr", "%0", 3, 1, 2, 0xa30000, sl97, pl97 },  /* jmpr/rel16 */
-    { "jmp", "%0", 3, 1, 2, 0xa20000, sl98, pl98 },  /* jmp/abs16 */
-    { "callr", "%0", 3, 1, 2, 0xab0000, sl99, pl99 },  /* callr/rel16 */
-    { "call", "%0", 3, 1, 2, 0xaa0000, sl100, pl100 },  /* call/abs16 */
+    { "sxt8", "%0, %1", 2, 2, 2, 0x32c0, sl56, pl56 },  /* sxt8/reg_reg */
+    { "clz", "%0, %1", 2, 2, 2, 0x3300, sl57, pl57 },  /* clz/reg_reg */
+    { "bitrev", "%0, %1", 2, 2, 2, 0x3380, sl58, pl58 },  /* bitrev/reg_reg */
+    { "popcount", "%0, %1", 2, 2, 2, 0x3280, sl59, pl59 },  /* popcount/reg_reg */
+    { "iseq", "%0, %1, %2", 2, 3, 4, 0x7e00, sl60, pl60 },  /* iseq/three_reg */
+    { "iseq", "%0, %1, #%2", 2, 3, 2, 0x7800, sl61, pl61 },  /* iseq/reg_imm5 */
+    { "iseq", "%0, %1, #%2", 2, 3, 4, 0x7a00, sl62, pl62 },  /* iseq/reg_reg_imm3 */
+    { "isset", "%0, %1, #%2", 2, 3, 2, 0x7900, sl63, pl63 },  /* isset/reg_immbit5 */
+    { "isset", "%0, %1, #%2", 2, 3, 2, 0x7d00, sl64, pl64 },  /* isset/reg_immask5 */
+    { "push8", "%0", 2, 1, 1, 0x9100, sl65, pl65 },  /* push8/single */
+    { "push", "%0", 2, 1, 1, 0x9000, sl66, pl66 },  /* push/single */
+    { "push", "%0, %1", 2, 2, 2, 0x9200, sl67, pl67 },  /* push/double */
+    { "push", "%0, %1, %2", 2, 3, 4, 0x9600, sl68, pl68 },  /* push/triple */
+    { "pop8", "%0", 2, 1, 1, 0x9900, sl69, pl69 },  /* pop8/single */
+    { "pop", "%0", 2, 1, 1, 0x9800, sl70, pl70 },  /* pop/single */
+    { "pop", "%0, %1", 2, 2, 2, 0x9a00, sl71, pl71 },  /* pop/double */
+    { "pop", "%0, %1, %2", 2, 3, 4, 0x9e00, sl72, pl72 },  /* pop/triple */
+    { "jmpr", "%0", 2, 1, 1, 0xa400, sl73, pl73 },  /* jmpr/rel8 */
+    { "call", "%0", 2, 1, 1, 0xac00, sl74, pl74 },  /* call/reg */
+    { "ld8", "%0, [%1, #%2]", 3, 3, 4, 0x240000, sl75, pl75 },  /* ld8/reg_reg10 */
+    { "ld", "%0, [%1, #%2]", 3, 3, 4, 0x1c0000, sl76, pl76 },  /* ld/reg_reg10 */
+    { "st8", "%0, [%1, #%2]", 3, 3, 4, 0x140000, sl77, pl77 },  /* st8/reg_reg10 */
+    { "st", "%0, [%1, #%2]", 3, 3, 4, 0x0c0000, sl78, pl78 },  /* st/reg_reg10 */
+    { "mov", "%0, #%1", 3, 2, 3, 0x880000, sl79, pl79 },  /* mov/reg_imm16 */
+    { "add", "%0, %1, #%2", 3, 3, 4, 0x3c0000, sl80, pl80 },  /* add/reg_reg_imm10 */
+    { "rsb", "%0, %1, #%2", 3, 3, 4, 0x440000, sl81, pl81 },  /* rsb/reg_reg_imm10 */
+    { "xor", "%0, %1, #%2", 3, 3, 4, 0x4c0000, sl82, pl82 },  /* xor/reg_reg_imm10 */
+    { "or", "%0, %1, #%2", 3, 3, 4, 0x540000, sl83, pl83 },  /* or/reg_reg_imm10 */
+    { "and", "%0, %1, #%2", 3, 3, 4, 0x5c0000, sl84, pl84 },  /* and/reg_reg_imm10 */
+    { "br8", "%0, %1, %2, %3", 3, 4, 5, 0xae0000, sl85, pl85 },  /* br8/cond_reg_reg */
+    { "br8", "%0, %1, %2, %3", 3, 4, 5, 0xae0000, sl86, pl86 },  /* br8/cond_reg_reg swapped */
+    { "br8", "%0, %2, #%1, %3", 3, 4, 3, 0xa80000, sl87, pl87 },  /* br8/cond_reg_imm */
+    { "br", "%0, %1, %2, %3", 3, 4, 5, 0xa60000, sl88, pl88 },  /* br/cond_reg_reg */
+    { "br", "%0, %1, %2, %3", 3, 4, 5, 0xa60000, sl89, pl89 },  /* br/cond_reg_reg swapped */
+    { "br", "%0, %2, #%1, %3", 3, 4, 3, 0xa00000, sl90, pl90 },  /* br/cond_reg_imm */
+    { "brclear", "%0, #%1, %2", 3, 3, 3, 0xa10000, sl91, pl91 },  /* brclear/reg_mask */
+    { "brclear", "%0, #%1, %2", 3, 3, 3, 0xa50000, sl92, pl92 },  /* brclear/reg_mask5 */
+    { "brset", "%0, #%1, %2", 3, 3, 3, 0xa90000, sl93, pl93 },  /* brset/reg_mask */
+    { "brset", "%0, #%1, %2", 3, 3, 3, 0xad0000, sl94, pl94 },  /* brset/reg_mask5 */
+    { "iseq", "%0, %1, #%2", 3, 3, 4, 0x7c0000, sl95, pl95 },  /* iseq/reg_reg_imm10 */
+    { "jmpr", "%0", 3, 1, 2, 0xa30000, sl96, pl96 },  /* jmpr/rel16 */
+    { "jmp", "%0", 3, 1, 2, 0xa20000, sl97, pl97 },  /* jmp/abs16 */
+    { "callr", "%0", 3, 1, 2, 0xab0000, sl98, pl98 },  /* callr/rel16 */
+    { "call", "%0", 3, 1, 2, 0xaa0000, sl99, pl99 },  /* call/abs16 */
   };
 
-const unsigned int fructus_nforms = 101;
+const unsigned int fructus_nforms = 100;
 
 const fructus_cand fructus_opcode_cand[] =
   {
@@ -889,45 +881,44 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,   7 },
     { 0x00, 0x00,  20 },
     { 0x00, 0x00,  20 },
-    { 0x00, 0x00,  79 },
-    { 0x00, 0x00,  19 },
-    { 0x00, 0x00,  19 },
     { 0x00, 0x00,  78 },
+    { 0x00, 0x00,  19 },
+    { 0x00, 0x00,  19 },
+    { 0x00, 0x00,  77 },
     { 0x00, 0x00,  17 },
     { 0x00, 0x00,  18 },
     { 0x00, 0x00,  18 },
-    { 0x00, 0x00,  77 },
+    { 0x00, 0x00,  76 },
     { 0x00, 0x00,  15 },
     { 0x00, 0x00,  16 },
     { 0x00, 0x00,  16 },
-    { 0x00, 0x00,  76 },
+    { 0x00, 0x00,  75 },
     { 0x00, 0x00,  21 },
     { 0x00, 0x00,  22 },
     { 0x00, 0x00,  23 },
-    { 0xc0, 0x00,  56 },
-    { 0xc0, 0x40,  58 },
-    { 0xc0, 0x80,  60 },
+    { 0xc0, 0xc0,  56 },
+    { 0xc0, 0x80,  59 },
     { 0xc0, 0x00,  57 },
-    { 0xc0, 0x40,  59 },
+    { 0xc0, 0x80,  58 },
     { 0x00, 0x00,  25 },
     { 0x00, 0x00,  26 },
     { 0x00, 0x00,  28 },
     { 0x00, 0x00,  28 },
-    { 0x00, 0x00,  81 },
+    { 0x00, 0x00,  80 },
     { 0x00, 0x00,  27 },
     { 0x00, 0x00,  24 },
     { 0x00, 0x00,  24 },
     { 0x00, 0x00,  30 },
     { 0x00, 0x00,  31 },
     { 0x00, 0x00,  31 },
-    { 0x00, 0x00,  82 },
+    { 0x00, 0x00,  81 },
     { 0x00, 0x00,  29 },
     { 0x00, 0x00,  29 },
     { 0x00, 0x00,  33 },
     { 0x00, 0x00,  34 },
     { 0x00, 0x00,  36 },
     { 0x00, 0x00,  36 },
-    { 0x00, 0x00,  83 },
+    { 0x00, 0x00,  82 },
     { 0x00, 0x00,  35 },
     { 0x00, 0x00,  32 },
     { 0x00, 0x00,  32 },
@@ -935,7 +926,7 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,  39 },
     { 0x00, 0x00,  41 },
     { 0x00, 0x00,  41 },
-    { 0x00, 0x00,  84 },
+    { 0x00, 0x00,  83 },
     { 0x00, 0x00,  40 },
     { 0x00, 0x00,  37 },
     { 0x00, 0x00,  37 },
@@ -943,7 +934,7 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,  44 },
     { 0x00, 0x00,  46 },
     { 0x00, 0x00,  46 },
-    { 0x00, 0x00,  85 },
+    { 0x00, 0x00,  84 },
     { 0x00, 0x00,  45 },
     { 0x00, 0x00,  42 },
     { 0x00, 0x00,  42 },
@@ -962,14 +953,14 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,  55 },
     { 0x00, 0x00,  53 },
     { 0x00, 0x00,  53 },
+    { 0x00, 0x00,  61 },
+    { 0x00, 0x00,  63 },
     { 0x00, 0x00,  62 },
+    { 0x00, 0x00,  62 },
+    { 0x00, 0x00,  95 },
     { 0x00, 0x00,  64 },
-    { 0x00, 0x00,  63 },
-    { 0x00, 0x00,  63 },
-    { 0x00, 0x00,  96 },
-    { 0x00, 0x00,  65 },
-    { 0x00, 0x00,  61 },
-    { 0x00, 0x00,  61 },
+    { 0x00, 0x00,  60 },
+    { 0x00, 0x00,  60 },
     { 0x00, 0x00,   4 },
     { 0x00, 0x00,   9 },
     { 0x00, 0x00,  10 },
@@ -977,40 +968,40 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,   8 },
     { 0x00, 0x00,   3 },
     { 0x00, 0x00,  14 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0x00, 0x00,  80 },
-    { 0xf8, 0x00,  67 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
+    { 0x00, 0x00,  79 },
     { 0xf8, 0x00,  66 },
-    { 0xc0, 0x00,  68 },
-    { 0x00, 0x00,  69 },
-    { 0x00, 0x00,  69 },
-    { 0xf8, 0x00,  71 },
+    { 0xf8, 0x00,  65 },
+    { 0xc0, 0x00,  67 },
+    { 0x00, 0x00,  68 },
+    { 0x00, 0x00,  68 },
     { 0xf8, 0x00,  70 },
-    { 0xc0, 0x00,  72 },
-    { 0x00, 0x00,  73 },
-    { 0x00, 0x00,  73 },
+    { 0xf8, 0x00,  69 },
+    { 0xc0, 0x00,  71 },
+    { 0x00, 0x00,  72 },
+    { 0x00, 0x00,  72 },
+    { 0x00, 0x00,  90 },
     { 0x00, 0x00,  91 },
-    { 0x00, 0x00,  92 },
-    { 0x00, 0x00,  98 },
     { 0x00, 0x00,  97 },
-    { 0x00, 0x00,  74 },
-    { 0x00, 0x00,  93 },
-    { 0x00, 0x00,  89 },
-    { 0x00, 0x00,  89 },
+    { 0x00, 0x00,  96 },
+    { 0x00, 0x00,  73 },
+    { 0x00, 0x00,  92 },
     { 0x00, 0x00,  88 },
-    { 0x00, 0x00,  94 },
-    { 0x00, 0x00, 100 },
+    { 0x00, 0x00,  88 },
+    { 0x00, 0x00,  87 },
+    { 0x00, 0x00,  93 },
     { 0x00, 0x00,  99 },
-    { 0xf8, 0x00,  75 },
-    { 0x00, 0x00,  95 },
-    { 0x00, 0x00,  86 },
-    { 0x00, 0x00,  86 }
+    { 0x00, 0x00,  98 },
+    { 0xf8, 0x00,  74 },
+    { 0x00, 0x00,  94 },
+    { 0x00, 0x00,  85 },
+    { 0x00, 0x00,  85 }
   };
 
 const short fructus_opcode_first[257] =
@@ -1021,33 +1012,33 @@ const short fructus_opcode_first[257] =
      14,  15,  15,  16,  17,  18,  18,  18,   /* 0x18 */
      18,  19,  19,  20,  21,  22,  22,  22,   /* 0x20 */
      22,  23,  24,  24,  24,  24,  25,  25,   /* 0x28 */
-     25,  25,  25,  28,  30,  30,  30,  30,   /* 0x30 */
-     30,  31,  32,  33,  34,  35,  36,  37,   /* 0x38 */
-     38,  39,  39,  40,  41,  42,  42,  43,   /* 0x40 */
-     44,  45,  46,  47,  48,  49,  50,  51,   /* 0x48 */
-     52,  53,  54,  55,  56,  57,  58,  59,   /* 0x50 */
-     60,  61,  62,  63,  64,  65,  66,  67,   /* 0x58 */
-     68,  69,  69,  70,  71,  71,  71,  72,   /* 0x60 */
-     73,  74,  74,  75,  76,  76,  76,  77,   /* 0x68 */
-     78,  79,  79,  80,  81,  81,  81,  82,   /* 0x70 */
-     83,  84,  85,  86,  87,  88,  89,  90,   /* 0x78 */
-     91,  92,  93,  94,  95,  96,  97,  97,   /* 0x80 */
-     98,  99, 100, 101, 102, 103, 104, 105,   /* 0x88 */
-    106, 107, 108, 109, 109, 109, 109, 110,   /* 0x90 */
-    111, 112, 113, 114, 114, 114, 114, 115,   /* 0x98 */
-    116, 117, 118, 119, 120, 121, 122, 123,   /* 0xa0 */
-    124, 125, 126, 127, 128, 129, 130, 131,   /* 0xa8 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xb0 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xb8 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xc0 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xc8 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xd0 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xd8 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xe0 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xe8 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xf0 */
-    132, 132, 132, 132, 132, 132, 132, 132,   /* 0xf8 */
-    132   /* 0x100 */
+     25,  25,  25,  27,  29,  29,  29,  29,   /* 0x30 */
+     29,  30,  31,  32,  33,  34,  35,  36,   /* 0x38 */
+     37,  38,  38,  39,  40,  41,  41,  42,   /* 0x40 */
+     43,  44,  45,  46,  47,  48,  49,  50,   /* 0x48 */
+     51,  52,  53,  54,  55,  56,  57,  58,   /* 0x50 */
+     59,  60,  61,  62,  63,  64,  65,  66,   /* 0x58 */
+     67,  68,  68,  69,  70,  70,  70,  71,   /* 0x60 */
+     72,  73,  73,  74,  75,  75,  75,  76,   /* 0x68 */
+     77,  78,  78,  79,  80,  80,  80,  81,   /* 0x70 */
+     82,  83,  84,  85,  86,  87,  88,  89,   /* 0x78 */
+     90,  91,  92,  93,  94,  95,  96,  96,   /* 0x80 */
+     97,  98,  99, 100, 101, 102, 103, 104,   /* 0x88 */
+    105, 106, 107, 108, 108, 108, 108, 109,   /* 0x90 */
+    110, 111, 112, 113, 113, 113, 113, 114,   /* 0x98 */
+    115, 116, 117, 118, 119, 120, 121, 122,   /* 0xa0 */
+    123, 124, 125, 126, 127, 128, 129, 130,   /* 0xa8 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xb0 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xb8 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xc0 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xc8 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xd0 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xd8 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xe0 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xe8 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xf0 */
+    131, 131, 131, 131, 131, 131, 131, 131,   /* 0xf8 */
+    131   /* 0x100 */
   };
 
 const fructus_condimm fructus_condimm_accept[] =
