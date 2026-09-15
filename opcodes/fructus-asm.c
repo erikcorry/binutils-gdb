@@ -823,8 +823,8 @@ const fructus_form fructus_forms[] =
     { "lsr", "%0, %1, #%2", 2, 3, 4, 0x7200, sl55, pl55 },  /* lsr/reg_reg_imm3 */
     { "sxt8", "%0, %1", 2, 2, 2, 0x32c0, sl56, pl56 },  /* sxt8/reg_reg */
     { "clz", "%0, %1", 2, 2, 2, 0x3300, sl57, pl57 },  /* clz/reg_reg */
-    { "bitrev", "%0, %1", 2, 2, 2, 0x3380, sl58, pl58 },  /* bitrev/reg_reg */
-    { "popcount", "%0, %1", 2, 2, 2, 0x3280, sl59, pl59 },  /* popcount/reg_reg */
+    { "bitrev", "%0, %1", 2, 2, 2, 0x3280, sl58, pl58 },  /* bitrev/reg_reg */
+    { "popcount", "%0, %1", 2, 2, 2, 0x3380, sl59, pl59 },  /* popcount/reg_reg */
     { "iseq", "%0, %1, %2", 2, 3, 4, 0x7e00, sl60, pl60 },  /* iseq/three_reg */
     { "iseq", "%0, %1, #%2", 2, 3, 2, 0x7800, sl61, pl61 },  /* iseq/reg_imm5 */
     { "iseq", "%0, %1, #%2", 2, 3, 4, 0x7a00, sl62, pl62 },  /* iseq/reg_reg_imm3 */
@@ -897,9 +897,9 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,  22 },
     { 0x00, 0x00,  23 },
     { 0xc0, 0xc0,  56 },
-    { 0xc0, 0x80,  59 },
-    { 0xc0, 0x00,  57 },
     { 0xc0, 0x80,  58 },
+    { 0xc0, 0x00,  57 },
+    { 0xc0, 0x80,  59 },
     { 0x00, 0x00,  25 },
     { 0x00, 0x00,  26 },
     { 0x00, 0x00,  28 },
