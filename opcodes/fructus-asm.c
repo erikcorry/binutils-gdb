@@ -870,8 +870,8 @@ const fructus_form fructus_forms[] =
     { "ldm", "%0, %1", 2, 2, 2, 0x9b00, sl78, pl78 },  /* ldm/double */
     { "ldm", "%0, %1, %2", 2, 3, 4, 0x9c00, sl79, pl79 },  /* ldm/triple */
     { "jmpr", "%0", 2, 1, 1, 0xa300, sl80, pl80 },  /* jmpr/rel8 */
-    { "call", "%0", 2, 1, 1, 0xa900, sl81, pl81 },  /* call/reg */
-    { "jmp", "%0", 2, 1, 1, 0xa100, sl82, pl82 },  /* jmp/reg */
+    { "call", "%0", 2, 1, 1, 0xaa00, sl81, pl81 },  /* call/reg */
+    { "jmp", "%0", 2, 1, 1, 0xa200, sl82, pl82 },  /* jmp/reg */
     { "ld8", "%0, [%1, #%2]", 3, 3, 4, 0x210000, sl83, pl83 },  /* ld8/reg_reg10 */
     { "ld", "%0, [%1, #%2]", 3, 3, 4, 0x190000, sl84, pl84 },  /* ld/reg_reg10 */
     { "st8", "%0, [%1, #%2]", 3, 3, 4, 0x110000, sl85, pl85 },  /* st8/reg_reg10 */
@@ -890,8 +890,8 @@ const fructus_form fructus_forms[] =
     { "brset", "%0, #%1, %2", 3, 3, 3, 0xac0000, sl98, pl98 },  /* brset/reg_mask */
     { "brset", "%0, #%1, %2", 3, 3, 3, 0xad0000, sl99, pl99 },  /* brset/reg_mask5 */
     { "iseq", "%0, %1, #%2", 3, 3, 4, 0x790000, sl100, pl100 },  /* iseq/reg_reg_imm10 */
-    { "jmp", "%0", 3, 1, 2, 0xa20000, sl101, pl101 },  /* jmp/abs16 */
-    { "call", "%0", 3, 1, 2, 0xaa0000, sl102, pl102 },  /* call/abs16 */
+    { "jmp", "%0", 3, 1, 2, 0xa10000, sl101, pl101 },  /* jmp/abs16 */
+    { "call", "%0", 3, 1, 2, 0xa90000, sl102, pl102 },  /* call/abs16 */
   };
 
 const unsigned int fructus_nforms = 103;
@@ -1026,15 +1026,15 @@ const fructus_cand fructus_opcode_cand[] =
     { 0x00, 0x00,  73 },
     { 0x00, 0x00,  73 },
     { 0x00, 0x00,  95 },
-    { 0xf8, 0x00,  82 },
     { 0x00, 0x00, 101 },
+    { 0xf8, 0x00,  82 },
     { 0x00, 0x00,  80 },
     { 0x00, 0x00,  96 },
     { 0x00, 0x00,  97 },
     { 0x00, 0x00,  93 },
     { 0x00, 0x00,  93 },
-    { 0xf8, 0x00,  81 },
     { 0x00, 0x00, 102 },
+    { 0xf8, 0x00,  81 },
     { 0x00, 0x00,  11 },
     { 0x00, 0x00,  98 },
     { 0x00, 0x00,  99 }
