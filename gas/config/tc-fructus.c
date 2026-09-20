@@ -349,9 +349,9 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	      return false;
 	    imm = (valueT) sv[j].ex.X_add_number & 0xffff;
 
-	    /* br and br8 take different spellings, because the width decides
-	       which predicates coincide: at eight bits `lt #1' and `lt #-32767'
-	       are the same test, since -32767 & 255 is 1.  */
+	    /* The width is part of the match: an entry accepts a spelling only
+	       at the width it was written for.  br is the only width now, but
+	       the table still carries it, so the comparison still checks it.  */
 	    for (k = 0; k < fructus_ncondimm_accept; k++)
 	      if (fructus_condimm_accept[k].imm == imm
 		  && fructus_condimm_accept[k].width == o->bits
