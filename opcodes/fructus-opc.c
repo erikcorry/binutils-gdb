@@ -13,9 +13,9 @@
 
 const fructus_opc_info_t fructus_opc_info[256] =
   {
-    { 1, FRUCTUS_1B_NONE, 0, "halt" },                      /* 0x00 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x01 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x02 */
+    { 1, FRUCTUS_1B_NONE, 0, "brk" },                       /* 0x00 */
+    { 1, FRUCTUS_1B_NONE, 0, "halt" },                      /* 0x01 */
+    { 1, FRUCTUS_1B_NONE, 0, "rti" },                       /* 0x02 */
     { 1, FRUCTUS_1B_NONE, 0, "ld" },                        /* 0x03 */
     { 1, FRUCTUS_1B_NONE, 0, "ld8" },                       /* 0x04 */
     { 1, FRUCTUS_1B_NONE, 0, "add" },                       /* 0x05 */
@@ -187,8 +187,8 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 1, FRUCTUS_1B_NONE, 0, "ret" },                       /* 0xab */
     { 3, FRUCTUS_3B_IMMBIT5_OFF8_REG, 1, "brset" },         /* 0xac */
     { 3, FRUCTUS_3B_IMMASK5_OFF8_REG, 1, "brset" },         /* 0xad */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xae */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xaf */
+    { 1, FRUCTUS_1B_NONE, 0, "sei" },                       /* 0xae */
+    { 1, FRUCTUS_1B_NONE, 0, "cli" },                       /* 0xaf */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb0 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb1 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb2 */
