@@ -755,7 +755,7 @@ static const fructus_opnd sl99[] =
 static const fructus_place pl99[] =
   { { 0, 0, 5, 11 }, { 2, 0, 3, 8 }, { 3, 0, 8, 0 } };
 
-/* brclear/reg_mask */
+/* brclr/reg_mask */
 static const fructus_opnd sl100[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_TABLE, FR_T_IMMBIT5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -763,7 +763,7 @@ static const fructus_opnd sl100[] =
 static const fructus_place pl100[] =
   { { 1, 0, 5, 11 }, { 0, 0, 3, 8 }, { 2, 0, 8, 0 } };
 
-/* brclear/reg_mask5 */
+/* brclr/reg_mask5 */
 static const fructus_opnd sl101[] =
   { { FR_REG, FR_T_NONE, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
     { FR_TABLE, FR_T_IMMASK5, FR_R_NONE, 0, 0, 0, 0, -1, 0, 0 },
@@ -909,8 +909,8 @@ const fructus_form fructus_forms[] =
     { "br", "%0, %1, %2, %3", 3, 4, 5, 0xa60000, sl97, pl97 },  /* br/cond_reg_reg */
     { "br", "%0, %1, %2, %3", 3, 4, 5, 0xa60000, sl98, pl98 },  /* br/cond_reg_reg swapped */
     { "br", "%0, %2, #%1, %3", 3, 4, 3, 0xa00000, sl99, pl99 },  /* br/cond_reg_imm */
-    { "brclear", "%0, #%1, %2", 3, 3, 3, 0xa40000, sl100, pl100 },  /* brclear/reg_mask */
-    { "brclear", "%0, #%1, %2", 3, 3, 3, 0xa50000, sl101, pl101 },  /* brclear/reg_mask5 */
+    { "brclr", "%0, #%1, %2", 3, 3, 3, 0xa40000, sl100, pl100 },  /* brclr/reg_mask */
+    { "brclr", "%0, #%1, %2", 3, 3, 3, 0xa50000, sl101, pl101 },  /* brclr/reg_mask5 */
     { "brset", "%0, #%1, %2", 3, 3, 3, 0xac0000, sl102, pl102 },  /* brset/reg_mask */
     { "brset", "%0, #%1, %2", 3, 3, 3, 0xad0000, sl103, pl103 },  /* brset/reg_mask5 */
     { "iseq", "%0, %1, #%2", 3, 3, 4, 0x790000, sl104, pl104 },  /* iseq/reg_reg_imm10 */

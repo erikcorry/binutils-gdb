@@ -35,7 +35,7 @@ START_RELOC_NUMBERS (elf_fructus_reloc_type)
   RELOC_NUMBER (R_FRUCTUS_NONE,      0)
   RELOC_NUMBER (R_FRUCTUS_8,         1)  /* #d8, and any 8-bit datum.  */
   RELOC_NUMBER (R_FRUCTUS_16,        2)  /* jmp/call abs16, mov #imm16, dw.  */
-  RELOC_NUMBER (R_FRUCTUS_8_PCREL,   3)  /* br, brclear, brset, jmpr.  */
+  RELOC_NUMBER (R_FRUCTUS_8_PCREL,   3)  /* br, brclr, brset, jmpr.  */
   RELOC_NUMBER (R_FRUCTUS_16_PCREL,  4)  /* jmpr rel16, callr rel16.  */
 END_RELOC_NUMBERS (R_FRUCTUS_max)
 
