@@ -54,13 +54,13 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "ld8" },                /* 0x26 */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "ld8" },                /* 0x27 */
     { 2, FRUCTUS_2B_IMM5_REG, 0, "mov" },                   /* 0x28 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x29 */
+    { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "movhi" },            /* 0x29 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x2a */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x2b */
     { 2, FRUCTUS_2B_IMMBIT5_REG, 0, "mov" },                /* 0x2c */
     { 2, FRUCTUS_2B_IMMASK5_REG, 0, "mov" },                /* 0x2d */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x2e */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x2f */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "movhi" },              /* 0x2e */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "movhi" },              /* 0x2f */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x30 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x31 */
     { 2, FRUCTUS_2B_REG_REG, 0, "sxt8" },                   /* 0x32 */
