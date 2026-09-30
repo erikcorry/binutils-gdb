@@ -35,6 +35,12 @@
    needs to pad a section.  */
 #define md_section_align(SEGMENT, SIZE)	(SIZE)
 
+/* But a `.p2align' in code - gcc's -falign-loops, say - pads with this, and
+   gas's default is 0x00, which is brk: a loop entered by falling into its
+   padding trapped.  nop is one byte, so any gap fills with it.  */
+#include "opcode/fructus.h"
+#define NOP_OPCODE FRUCTUS_NOP
+
 #define md_number_to_chars		number_to_chars_littleendian
 
 /* `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
