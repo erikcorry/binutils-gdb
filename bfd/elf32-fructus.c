@@ -19,16 +19,21 @@
 
 /* Fructus is a 16-bit machine in an elf32 container.  There is no GOT, no PLT,
    no dynamic linking and no MMU, so this file is nearly the minimum an ELF
-   backend can be: five relocations, the two lookups, and a relocate_section
-   that hands everything to _bfd_final_link_relocate.
+   backend can be: six relocations, the two lookups, and a relocate_section
+   that hands almost everything to _bfd_final_link_relocate.
 
-   All four real relocations are generic - see include/elf/fructus.h.  */
+   Four of the real relocations are generic.  The fifth, R_FRUCTUS_ZP10,
+   reaches the zero page from a base register holding 0x200 and is applied
+   here, by fructus_zp_apply - see include/elf/fructus.h.  */
 
 #include "sysdep.h"
 #include "bfd.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf/fructus.h"
+
+static bfd_reloc_status_type fructus_elf_zp_reloc
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 
 /* `pcrel_offset' is true, so the linker computes S + A - P with P the address
    of the field.  A Fructus displacement is relative to the address of the next
@@ -91,7 +96,66 @@ static reloc_howto_type fructus_elf_howto_table [] =
 	 bfd_elf_generic_reloc,
 	 "R_FRUCTUS_16_PCREL",
 	 false, 0, 0xffff, true),
+
+  /* A zero page address as a displacement from FRUCTUS_ZP_BASE, in the imm10
+     field of a three-byte form: `ld rd, [rb, #zp(sym)]' with rb = 0x200.  The
+     field is bits 15:6 of the halfword at byte 1, and the value placed is
+     S + A - 0x200, which must land in -512..511: the address must be in
+     0x0000..0x03ff.  The bias is why this has a special function and is
+     applied by fructus_zp_apply rather than _bfd_final_link_relocate.  */
+  HOWTO (R_FRUCTUS_ZP10,
+	 0, 2, 10, false, 6,
+	 complain_overflow_signed,
+	 fructus_elf_zp_reloc,
+	 "R_FRUCTUS_ZP10",
+	 false, 0, 0xffc0, false),
 };
+
+/* Place ADDRESS, as a zero page displacement, in the field at LOC.  */
+
+static bfd_reloc_status_type
+fructus_zp_apply (bfd *abfd, bfd_vma address, bfd_byte *loc)
+{
+  bfd_vma field;
+
+  /* Unsigned, so an address that went below zero is huge and fails too.  */
+  if (address > 0x3ff)
+    return bfd_reloc_overflow;
+
+  field = bfd_get_16 (abfd, loc);
+  field = (field & 0x003f) | (((address - FRUCTUS_ZP_BASE) & 0x3ff) << 6);
+  bfd_put_16 (abfd, field, loc);
+  return bfd_reloc_ok;
+}
+
+/* R_FRUCTUS_ZP10 outside a final link by elf_backend_relocate_section: what
+   bfd_perform_relocation calls, for objdump --reloc's applied view and the
+   like.  A relocatable link leaves it to the final one.  */
+
+static bfd_reloc_status_type
+fructus_elf_zp_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+		      void *data, asection *input_section, bfd *output_bfd,
+		      char **error_message)
+{
+  bfd_size_type octets;
+  bfd_vma address;
+
+  if (output_bfd != NULL)
+    return bfd_elf_generic_reloc (abfd, reloc_entry, symbol, data,
+				  input_section, output_bfd, error_message);
+
+  if (bfd_is_und_section (symbol->section))
+    return bfd_reloc_undefined;
+
+  octets = reloc_entry->address * bfd_octets_per_byte (abfd, input_section);
+  if (!bfd_reloc_offset_in_range (reloc_entry->howto, abfd, input_section,
+				  octets))
+    return bfd_reloc_outofrange;
+
+  address = (symbol->value + symbol->section->output_section->vma
+	     + symbol->section->output_offset + reloc_entry->addend);
+  return fructus_zp_apply (abfd, address, (bfd_byte *) data + octets);
+}
 
 /* Map BFD reloc types to Fructus ELF reloc types.  */
 
@@ -108,6 +172,7 @@ static const struct fructus_reloc_map fructus_reloc_map [] =
   { BFD_RELOC_16,	 R_FRUCTUS_16 },
   { BFD_RELOC_8_PCREL,	 R_FRUCTUS_8_PCREL },
   { BFD_RELOC_16_PCREL,	 R_FRUCTUS_16_PCREL },
+  { BFD_RELOC_FRUCTUS_ZP10, R_FRUCTUS_ZP10 },
 };
 
 static reloc_howto_type *
@@ -159,8 +224,9 @@ fructus_info_to_howto_rela (bfd *abfd,
   return true;
 }
 
-/* Relocate a Fructus ELF section.  Every relocation here is generic, so this
-   is the standard walk with _bfd_final_link_relocate doing the arithmetic.  */
+/* Relocate a Fructus ELF section.  The standard walk, with
+   _bfd_final_link_relocate doing the arithmetic for the generic relocations
+   and fructus_zp_apply for the zero page one.  */
 
 static int
 fructus_elf_relocate_section (struct bfd_link_info *info,
@@ -231,8 +297,16 @@ fructus_elf_relocate_section (struct bfd_link_info *info,
       if (bfd_link_relocatable (info))
 	continue;
 
-      r = _bfd_final_link_relocate (howto, input_bfd, input_section, contents,
-				    rel->r_offset, relocation, rel->r_addend);
+      if (r_type == R_FRUCTUS_ZP10)
+	r = (bfd_reloc_offset_in_range (howto, input_bfd, input_section,
+					rel->r_offset)
+	     ? fructus_zp_apply (input_bfd, relocation + rel->r_addend,
+				 contents + rel->r_offset)
+	     : bfd_reloc_outofrange);
+      else
+	r = _bfd_final_link_relocate (howto, input_bfd, input_section,
+				      contents, rel->r_offset, relocation,
+				      rel->r_addend);
 
       if (r != bfd_reloc_ok)
 	{

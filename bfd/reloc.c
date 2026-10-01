@@ -7877,6 +7877,13 @@ ENUMX
 ENUMDOC
   LARCH relocations.
 
+ENUM
+  BFD_RELOC_FRUCTUS_ZP10
+ENUMDOC
+  Fructus zero page: a signed 10-bit displacement from a base register
+  holding 0x200, split across the last two bytes of the instruction.
+  The value placed is S + A - 0x200, so it reaches 0x0000..0x03ff.
+
 ENDSENUM
   BFD_RELOC_UNUSED
 

@@ -22,11 +22,11 @@
 
 #include "elf/reloc-macros.h"
 
-/* Relocation types.  Fructus needs no relocation of its own: every address in
-   a Fructus program is a plain 8- or 16-bit field, absolute or relative to the
-   address of the next instruction, so these four are the generic ones under
-   local names.  See isa/fructus.toml's [[reloc]] entries, which the
-   assembler's table is generated from.
+/* Relocation types.  Four are the generic ones under local names: a plain
+   8- or 16-bit field, absolute or relative to the address of the next
+   instruction.  The fifth, R_FRUCTUS_ZP10, is Fructus's own - see below.
+   See isa/fructus.toml's [[reloc]] entries, which the assembler's table is
+   generated from.
 
    The pc-relative pair are biased to the end of the instruction rather than to
    the field's own address; `pcrel_offset' true in the howto, and md_pcrel_from
@@ -37,6 +37,20 @@ START_RELOC_NUMBERS (elf_fructus_reloc_type)
   RELOC_NUMBER (R_FRUCTUS_16,        2)  /* jmp/call abs16, mov #imm16, dw.  */
   RELOC_NUMBER (R_FRUCTUS_8_PCREL,   3)  /* br, brclr, brset, jmpr.  */
   RELOC_NUMBER (R_FRUCTUS_16_PCREL,  4)  /* jmpr rel16, callr rel16.  */
+  RELOC_NUMBER (R_FRUCTUS_ZP10,      5)  /* #zp(sym) in an imm10 field.  */
 END_RELOC_NUMBERS (R_FRUCTUS_max)
+
+/* THE ZERO PAGE is 0x0000..0x03ff, reached as [rb, #imm10] with rb holding
+   FRUCTUS_ZP_BASE: imm10 is signed, so -512..511 from 0x200 is the whole
+   kilobyte.  R_FRUCTUS_ZP10 places S + A - FRUCTUS_ZP_BASE in the field and
+   refuses anything outside it.
+
+   The field is split - offset bits 1:0 at the top of byte 1, bits 9:2 in
+   byte 2 - but read as the little-endian halfword at byte 1 it is one run,
+   bits 15:6, so the howto is an ordinary 16-bit one with bitpos 6.  Byte 1's
+   low six bits are registers and are left alone.  tools/gen-asm.js asserts
+   that shape over every imm10 form in the spec, and tools/check.js that this
+   constant is the spec's.  */
+#define FRUCTUS_ZP_BASE 0x200
 
 #endif /* _ELF_FRUCTUS_H */

@@ -7322,6 +7322,11 @@ enum bfd_reloc_code_real
   BFD_RELOC_LARCH_TLS_GD_PCADD_LO12,
   BFD_RELOC_LARCH_TLS_DESC_PCADD_HI20,
   BFD_RELOC_LARCH_TLS_DESC_PCADD_LO12,
+
+  /* Fructus zero page: a signed 10-bit displacement from a base register
+     holding 0x200, split across the last two bytes of the instruction.
+     The value placed is S + A - 0x200, so it reaches 0x0000..0x03ff.  */
+  BFD_RELOC_FRUCTUS_ZP10,
   BFD_RELOC_UNUSED
 };
 typedef enum bfd_reloc_code_real bfd_reloc_code_real_type;

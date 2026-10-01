@@ -33,7 +33,17 @@
    `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
    and a 3-byte form reaching the whole address space.  md_begin finds that
    pair by inspecting the table rather than by knowing its name, and requires
-   it to be unique - see find_relax_pair.  */
+   it to be unique - see find_relax_pair.
+
+   THE ZERO PAGE.  `#zp(expr)' in an imm10 field is the displacement of expr
+   from FRUCTUS_ZP_BASE, the value a base register is assumed to hold:
+
+       mov  r4, #0x200
+       ld   r0, [r4, #zp(count)]
+
+   A symbol becomes R_FRUCTUS_ZP10; a constant is just subtracted, and then
+   competes for the shorter forms like any other.  .zplo and .zphi switch to
+   the sections the linker scripts put below and above the base.  */
 
 #include "as.h"
 #include "safe-ctype.h"
@@ -58,7 +68,25 @@ const char md_shortopts[] = "";
 const struct option md_longopts[] = { { NULL, no_argument, NULL, 0 } };
 const size_t md_longopts_size = sizeof (md_longopts);
 
-const pseudo_typeS md_pseudo_table[] = { { 0, 0, 0 } };
+/* .zplo and .zphi: the zero page's two halves, 0x0000-0x01ff below the base
+   and 0x0200-0x03ff above it.  Which a program uses is its own business; one
+   that keeps zp_hi free for something else simply never says .zphi.  */
+
+static void
+s_zp (int hi)
+{
+  obj_elf_section_change_hook ();
+  obj_elf_change_section (hi ? ".zphi" : ".zplo", SHT_PROGBITS,
+			  SHF_ALLOC | SHF_WRITE, 0, NULL, false);
+  demand_empty_rest_of_line ();
+}
+
+const pseudo_typeS md_pseudo_table[] =
+{
+  { "zplo", s_zp, 0 },
+  { "zphi", s_zp, 1 },
+  { 0, 0, 0 }
+};
 
 /* =========================================================================
    Relaxation
@@ -174,6 +202,7 @@ reloc_of (int r)
     case FR_R_16:		return BFD_RELOC_16;
     case FR_R_8_PCREL:		return BFD_RELOC_8_PCREL;
     case FR_R_16_PCREL:		return BFD_RELOC_16_PCREL;
+    case FR_R_ZP10:		return BFD_RELOC_FRUCTUS_ZP10;
     default:			return BFD_RELOC_NONE;
     }
 }
@@ -209,7 +238,46 @@ struct slotval
   char *      name;		/* FR_COND, FR_CC: the spelling as written */
   int         namelen;
   expressionS ex;		/* every other kind */
+  bool        zp;		/* ex is a symbolic zero page address */
 };
+
+/* `zp(expr)', optionally followed by `+ k' or `- k'.  A constant inside comes
+   back as its displacement from the base, an ordinary constant from then on;
+   anything else comes back as written, with V->zp set.  */
+
+static char *
+parse_zp (char *s, struct slotval *v)
+{
+  expressionS tail;
+
+  s = parse_exp (s, &v->ex);
+  if (v->ex.X_op == O_absent || v->ex.X_op == O_illegal)
+    return NULL;
+  s = skip_ws (s);
+  if (*s != ')')
+    return NULL;
+  s = skip_ws (s + 1);
+
+  if (*s == '+' || *s == '-')
+    {
+      s = parse_exp (s, &tail);
+      if (tail.X_op != O_constant)
+	return NULL;
+      v->ex.X_add_number += tail.X_add_number;
+    }
+
+  if (v->ex.X_op == O_constant)
+    {
+      if (v->ex.X_add_number < 0 || v->ex.X_add_number > 0x3ff)
+	return NULL;
+      v->ex.X_add_number -= FRUCTUS_ZP_BASE;
+    }
+  else if (v->ex.X_op == O_symbol)
+    v->zp = true;
+  else
+    return NULL;
+  return s;
+}
 
 static bool
 parse_slot (const fructus_opnd *o, char **sp, struct slotval *v)
@@ -240,6 +308,15 @@ parse_slot (const fructus_opnd *o, char **sp, struct slotval *v)
       break;
 
     default:
+      if ((o->kind == FR_INT || o->kind == FR_TABLE)
+	  && strncasecmp (s, "zp", 2) == 0
+	  && *skip_ws (s + 2) == '(')
+	{
+	  s = parse_zp (skip_ws (s + 2) + 1, v);
+	  if (s == NULL)
+	    return false;
+	  break;
+	}
       s = parse_exp (s, &v->ex);
       if (v->ex.X_op == O_absent || v->ex.X_op == O_illegal)
 	return false;
@@ -419,8 +496,11 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	    {
 	      /* A symbol fits only a field wide enough to hold a relocation,
 		 which is the same "does it fit" test as the constant case and
-		 is how `mov rd, #label' picks the three-byte form.  */
-	      if (o->reloc == FR_R_NONE)
+		 is how `mov rd, #label' picks the three-byte form.  An imm10
+		 field holds one only as a zero page address, and a zero page
+		 address goes nowhere else.  */
+	      if (o->reloc == FR_R_NONE
+		  || sv[i].zp != (o->reloc == FR_R_ZP10))
 		return false;
 	      m->known[i] = false;
 	      m->fixup[i] = true;
@@ -501,9 +581,11 @@ emit_form (const fructus_form *f, struct slotval *sv, struct matched *m)
       if (!m->fixup[i])
 	continue;
 
-      size = o->bits / 8;
       /* Every relocatable field ends its instruction, which tools/gen-asm.js
-	 asserts over the whole spec, so this is where it starts.  */
+	 asserts over the whole spec, so this is where it starts.  The zero
+	 page's is the halfword at byte 1 of a three-byte form, also asserted
+	 there; md_apply_fix and bfd touch only its offset bits.  */
+      size = o->reloc == FR_R_ZP10 ? 2 : o->bits / 8;
       fix_new_exp (frag_now,
 		   buf - frag_now->fr_literal + f->nbytes - size,
 		   size, &sv[i].ex, o->pcrel, reloc_of (o->reloc));
@@ -958,6 +1040,21 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
     case BFD_RELOC_16:
     case BFD_RELOC_16_PCREL:
       number_to_chars_littleendian (buf, val, 2);
+      break;
+
+    case BFD_RELOC_FRUCTUS_ZP10:
+      /* Only an absolute value is placed here; against a symbol the field
+	 stays zero and the linker fills it from the addend.  */
+      if (fixP->fx_addsy == NULL)
+	{
+	  if (val < 0 || val > 0x3ff)
+	    as_bad_where (fixP->fx_file, fixP->fx_line,
+			  _("zero page address %#lx is outside 0..0x3ff"),
+			  (long) val);
+	  val -= FRUCTUS_ZP_BASE;
+	  buf[0] = (buf[0] & 0x3f) | ((val & 3) << 6);
+	  buf[1] = (val >> 2) & 0xff;
+	}
       break;
 
     case BFD_RELOC_32:

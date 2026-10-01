@@ -43,7 +43,7 @@ enum fructus_valtab
    the same "does it fit" test again, with no special case.  */
 enum fructus_reloc
 {
-  FR_R_NONE, FR_R_8, FR_R_16, FR_R_8_PCREL, FR_R_16_PCREL
+  FR_R_NONE, FR_R_8, FR_R_16, FR_R_8_PCREL, FR_R_16_PCREL, FR_R_ZP10
 };
 
 typedef struct fructus_opnd

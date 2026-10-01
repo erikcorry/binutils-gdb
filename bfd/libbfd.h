@@ -3452,6 +3452,7 @@ static const char *const bfd_reloc_code_real_names[] = { "@@uninitialized@@",
   "BFD_RELOC_LARCH_TLS_GD_PCADD_LO12",
   "BFD_RELOC_LARCH_TLS_DESC_PCADD_HI20",
   "BFD_RELOC_LARCH_TLS_DESC_PCADD_LO12",
+  "BFD_RELOC_FRUCTUS_ZP10",
  "@@overflow: BFD_RELOC_UNUSED@@",
 };
 #endif
