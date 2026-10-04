@@ -43,7 +43,19 @@
 
    A symbol becomes R_FRUCTUS_ZP10; a constant is just subtracted, and then
    competes for the shorter forms like any other.  .zplo and .zphi switch to
-   the sections the linker scripts put below and above the base.  */
+   the sections the linker scripts put below and above the base.
+
+   TAGGED POINTERS.  `#tag1(expr)' is expr's address plus FRUCTUS_TAG1, as an
+   immediate - a slot the form writes `#%N' - and `tag1(expr)' is the same in
+   a two-byte data directive:
+
+       mov     r0, #tag1(nil)
+       .short  tag1(nil)
+
+   A symbol becomes R_FRUCTUS_16_TAG1, which only a 16-bit field can hold, so
+   the mov is the three-byte one; a constant is tagged here, and then competes
+   for the shorter forms like any other.  An odd expr is refused, by gas or by
+   the linker: see include/elf/fructus.h.  */
 
 #include "as.h"
 #include "safe-ctype.h"
@@ -239,6 +251,7 @@ struct slotval
   int         namelen;
   expressionS ex;		/* every other kind */
   bool        zp;		/* ex is a symbolic zero page address */
+  bool        tag1;		/* ex is a symbolic address, to be tagged */
 };
 
 /* `zp(expr)', optionally followed by `+ k' or `- k'.  A constant inside comes
@@ -279,6 +292,47 @@ parse_zp (char *s, struct slotval *v)
   return s;
 }
 
+/* `tag1(expr)', with S just after the parenthesis.  A constant comes back
+   tagged, an ordinary constant from then on, and must be even; a symbol
+   comes back as written, with V->tag1 set.  */
+
+static char *
+parse_tag1 (char *s, struct slotval *v)
+{
+  s = parse_exp (s, &v->ex);
+  if (v->ex.X_op == O_absent || v->ex.X_op == O_illegal)
+    return NULL;
+  s = skip_ws (s);
+  if (*s != ')')
+    return NULL;
+
+  if (v->ex.X_op == O_constant)
+    {
+      if (v->ex.X_add_number & 1)
+	return NULL;
+      v->ex.X_add_number += FRUCTUS_TAG1;
+    }
+  else if (v->ex.X_op == O_symbol)
+    v->tag1 = true;
+  else
+    return NULL;
+  return s + 1;
+}
+
+/* Whether slot N of F is written as an immediate, `#%N' in its syntax.  A
+   tagged pointer is a value, never a jump or call target.  */
+
+static bool
+immediate_slot_p (const fructus_form *f, unsigned int n)
+{
+  const char *p;
+
+  for (p = f->syntax; (p = strchr (p, '%')) != NULL; p += 2)
+    if (p[1] - '0' == (int) n)
+      return p > f->syntax && p[-1] == '#';
+  return false;
+}
+
 static bool
 parse_slot (const fructus_opnd *o, char **sp, struct slotval *v)
 {
@@ -313,6 +367,15 @@ parse_slot (const fructus_opnd *o, char **sp, struct slotval *v)
 	  && *skip_ws (s + 2) == '(')
 	{
 	  s = parse_zp (skip_ws (s + 2) + 1, v);
+	  if (s == NULL)
+	    return false;
+	  break;
+	}
+      if (o->kind == FR_INT
+	  && strncasecmp (s, "tag1", 4) == 0
+	  && *skip_ws (s + 4) == '(')
+	{
+	  s = parse_tag1 (skip_ws (s + 4) + 1, v);
 	  if (s == NULL)
 	    return false;
 	  break;
@@ -498,9 +561,12 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 		 which is the same "does it fit" test as the constant case and
 		 is how `mov rd, #label' picks the three-byte form.  An imm10
 		 field holds one only as a zero page address, and a zero page
-		 address goes nowhere else.  */
+		 address goes nowhere else.  A tagged one goes only in a 16-bit
+		 immediate.  */
 	      if (o->reloc == FR_R_NONE
-		  || sv[i].zp != (o->reloc == FR_R_ZP10))
+		  || sv[i].zp != (o->reloc == FR_R_ZP10)
+		  || (sv[i].tag1
+		      && (o->reloc != FR_R_16 || !immediate_slot_p (f, i))))
 		return false;
 	      m->known[i] = false;
 	      m->fixup[i] = true;
@@ -588,7 +654,8 @@ emit_form (const fructus_form *f, struct slotval *sv, struct matched *m)
       size = o->reloc == FR_R_ZP10 ? 2 : o->bits / 8;
       fix_new_exp (frag_now,
 		   buf - frag_now->fr_literal + f->nbytes - size,
-		   size, &sv[i].ex, o->pcrel, reloc_of (o->reloc));
+		   size, &sv[i].ex, o->pcrel,
+		   sv[i].tag1 ? BFD_RELOC_FRUCTUS_16_TAG1 : reloc_of (o->reloc));
     }
 }
 
@@ -1014,12 +1081,11 @@ md_convert_frag (bfd *abfd ATTRIBUTE_UNUSED, segT sec ATTRIBUTE_UNUSED,
    Fixups and relocations
    ========================================================================= */
 
-/* TAGGED POINTERS.  `tag1(expr)' as a value of a two-byte data directive -
-   .short, .2byte, .hword - is the address expr with FRUCTUS_TAG1 added,
-   R_FRUCTUS_16_TAG1 against a symbol.  The datum may be at any address,
-   and expr must be even: see include/elf/fructus.h.  Anything else is an
-   ordinary expression, so a symbol that happens to be called tag1 still
-   works when it is not followed by a parenthesis.  */
+/* `tag1(expr)' as a value of a two-byte data directive - .short, .2byte,
+   .hword - which is R_FRUCTUS_16_TAG1 against a symbol; see the top of this
+   file.  The datum may be at any address.  Anything else is an ordinary
+   expression, so a symbol that happens to be called tag1 still works when
+   it is not followed by a parenthesis - in an operand too.  */
 
 bfd_reloc_code_real_type
 fructus_parse_cons_expression (expressionS *exp, int nbytes)
