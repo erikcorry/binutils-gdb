@@ -7884,6 +7884,12 @@ ENUMDOC
   holding 0x200, split across the last two bytes of the instruction.
   The value placed is S + A - 0x200, so it reaches 0x0000..0x03ff.
 
+ENUM
+  BFD_RELOC_FRUCTUS_16_TAG1
+ENUMDOC
+  Fructus tagged pointer: a 16-bit absolute address plus one, in a datum
+  at any alignment.  The value placed is S + A + 1, and S + A must be even.
+
 ENDSENUM
   BFD_RELOC_UNUSED
 

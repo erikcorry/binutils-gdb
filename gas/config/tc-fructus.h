@@ -43,6 +43,12 @@
 
 #define md_number_to_chars		number_to_chars_littleendian
 
+/* `.short tag1(expr)': a tagged pointer, R_FRUCTUS_16_TAG1.  */
+#define TC_PARSE_CONS_EXPRESSION(EXP, NBYTES) \
+  fructus_parse_cons_expression (EXP, NBYTES)
+extern bfd_reloc_code_real_type fructus_parse_cons_expression (expressionS *,
+								 int);
+
 /* `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
    and a 3-byte form reaching the whole address space.  Everything else has a
    single encoding once its operands are known.  */

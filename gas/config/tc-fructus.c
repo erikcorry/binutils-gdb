@@ -1014,6 +1014,43 @@ md_convert_frag (bfd *abfd ATTRIBUTE_UNUSED, segT sec ATTRIBUTE_UNUSED,
    Fixups and relocations
    ========================================================================= */
 
+/* TAGGED POINTERS.  `tag1(expr)' as a value of a two-byte data directive -
+   .short, .2byte, .hword - is the address expr with FRUCTUS_TAG1 added,
+   R_FRUCTUS_16_TAG1 against a symbol.  The datum may be at any address,
+   and expr must be even: see include/elf/fructus.h.  Anything else is an
+   ordinary expression, so a symbol that happens to be called tag1 still
+   works when it is not followed by a parenthesis.  */
+
+bfd_reloc_code_real_type
+fructus_parse_cons_expression (expressionS *exp, int nbytes)
+{
+  char *save = input_line_pointer;
+  char *s = skip_ws (input_line_pointer);
+
+  if (strncasecmp (s, "tag1", 4) == 0 && *skip_ws (s + 4) == '(')
+    {
+      input_line_pointer = skip_ws (s + 4) + 1;
+      expression (exp);
+      input_line_pointer = skip_ws (input_line_pointer);
+      if (*input_line_pointer != ')')
+	{
+	  as_bad (_("missing `)' after tag1("));
+	  return BFD_RELOC_NONE;
+	}
+      input_line_pointer++;
+      if (nbytes != 2)
+	{
+	  as_bad (_("a tagged pointer is two bytes, not %d"), nbytes);
+	  return BFD_RELOC_NONE;
+	}
+      return BFD_RELOC_FRUCTUS_16_TAG1;
+    }
+
+  input_line_pointer = save;
+  expression (exp);
+  return BFD_RELOC_NONE;
+}
+
 void
 md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
 {
@@ -1054,6 +1091,19 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
 	  val -= FRUCTUS_ZP_BASE;
 	  buf[0] = (buf[0] & 0x3f) | ((val & 3) << 6);
 	  buf[1] = (val >> 2) & 0xff;
+	}
+      break;
+
+    case BFD_RELOC_FRUCTUS_16_TAG1:
+      /* As for the zero page: an absolute value is placed here, and against
+	 a symbol the linker places it from the addend.  */
+      if (fixP->fx_addsy == NULL)
+	{
+	  if (val & 1)
+	    as_bad_where (fixP->fx_file, fixP->fx_line,
+			  _("tagged pointer to an odd address %#lx"),
+			  (long) val);
+	  number_to_chars_littleendian (buf, val + FRUCTUS_TAG1, 2);
 	}
       break;
 
