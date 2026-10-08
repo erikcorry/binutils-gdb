@@ -195,16 +195,16 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb3 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb4 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb5 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb6 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb7 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xb6 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xb7 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb8 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb9 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xba */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbb */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbc */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbd */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbe */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbf */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhs" },              /* 0xbe */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhs" },              /* 0xbf */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc0 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc1 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc2 */
