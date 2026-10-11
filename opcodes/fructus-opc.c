@@ -110,7 +110,7 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "and" },                /* 0x5e */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "and" },                /* 0x5f */
     { 2, FRUCTUS_2B_IMM5_REG, 0, "shl" },                   /* 0x60 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x61 */
+    { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "shl" },              /* 0x61 */
     { 2, FRUCTUS_2B_REG_REG_SHIFT3, 0, "shl" },             /* 0x62 */
     { 2, FRUCTUS_2B_REG_REG_SHIFT3, 0, "shl" },             /* 0x63 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x64 */
@@ -118,7 +118,7 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "shl" },                /* 0x66 */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "shl" },                /* 0x67 */
     { 2, FRUCTUS_2B_IMM5_REG, 0, "asr" },                   /* 0x68 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x69 */
+    { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "asr" },              /* 0x69 */
     { 2, FRUCTUS_2B_REG_REG_SHIFT3, 0, "asr" },             /* 0x6a */
     { 2, FRUCTUS_2B_REG_REG_SHIFT3, 0, "asr" },             /* 0x6b */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x6c */
@@ -126,7 +126,7 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "asr" },                /* 0x6e */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "asr" },                /* 0x6f */
     { 2, FRUCTUS_2B_IMM5_REG, 0, "lsr" },                   /* 0x70 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x71 */
+    { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "lsr" },              /* 0x71 */
     { 2, FRUCTUS_2B_REG_REG_SHIFT3, 0, "lsr" },             /* 0x72 */
     { 2, FRUCTUS_2B_REG_REG_SHIFT3, 0, "lsr" },             /* 0x73 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x74 */
