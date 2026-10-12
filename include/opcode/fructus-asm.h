@@ -105,7 +105,7 @@ typedef struct fructus_cand
 extern const fructus_cand fructus_opcode_cand[];
 extern const short fructus_opcode_first[257];	/* [b] .. [b+1] is b's range */
 
-/* The condimm5 spellings the assembler accepts: the 32 table entries, plus
+/* The condimm5 spellings the assembler accepts: the table's entries, plus
    every other way of writing the same predicate.  `le #3' and `lt #4' are one
    entry; so are `hs #1' and `ne #0'.  Derived by comparing truth sets at both
    8 and 16 bits, not by a rule about +/-1.  */
@@ -119,6 +119,23 @@ typedef struct fructus_condimm
 
 extern const fructus_condimm fructus_condimm_accept[];
 extern const unsigned int fructus_ncondimm_accept;
+
+/* A branch whose test has no encoding of its own but is the same test as an
+   encodable branch of the other kind: `br lo, ra, #256' is
+   `brclr ra, #0xff00', and `brclr ra, #0xfff8' is `br lo, ra, #8'.  COND
+   is NULL on the mask side.  Tried when no form takes the line as written.  */
+typedef struct fructus_brequiv
+{
+  const char *   mnemonic;
+  const char *   cond;
+  unsigned short imm;
+  const char *   to_mnemonic;
+  const char *   to_cond;
+  unsigned short to_imm;
+} fructus_brequiv;
+
+extern const fructus_brequiv fructus_brequiv_accept[];
+extern const unsigned int fructus_nbrequiv_accept;
 
 /* An alias is a text rewrite: it captures each operand's text unexamined and
    builds the line the target would have been written as, then ordinary form

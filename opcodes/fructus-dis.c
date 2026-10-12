@@ -114,11 +114,19 @@ print_operands (struct disassemble_info *info, const fructus_opc_info_t *op,
 	  break;
 
 	case FR_CC:
-	  fpr (stream, dis_style_mnemonic, "%s", fructus_condimm5_cond[x & 31]);
+	  /* A free index encodes nothing; say so rather than print a name.  */
+	  if (fructus_condimm5_cond[x & 31] == NULL)
+	    fpr (stream, dis_style_text, "?%ld", x & 31);
+	  else
+	    fpr (stream, dis_style_mnemonic, "%s", fructus_condimm5_cond[x & 31]);
 	  break;
 
 	case FR_CK:
-	  fpr (stream, dis_style_immediate, "%ld", x);
+	  if (i > 0 && f->slots[i - 1].kind == FR_CC
+	      && fructus_condimm5_cond[v[i - 1] & 31] == NULL)
+	    fpr (stream, dis_style_text, "?");
+	  else
+	    fpr (stream, dis_style_immediate, "%ld", x);
 	  break;
 
 	case FR_TABLE:

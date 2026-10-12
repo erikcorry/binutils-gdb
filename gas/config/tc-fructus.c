@@ -252,6 +252,8 @@ struct slotval
   expressionS ex;		/* every other kind */
   bool        zp;		/* ex is a symbolic zero page address */
   bool        tag1;		/* ex is a symbolic address, to be tagged */
+  char *      text;		/* the operand as written, for a redirect */
+  int         textlen;
 };
 
 /* `zp(expr)', optionally followed by `+ k' or `- k'.  A constant inside comes
@@ -408,8 +410,12 @@ parse_form (const fructus_form *f, char *line, struct slotval *sv)
 
 	  p += 2;
 	  s = skip_ws (s);
+	  sv[n].text = s;
 	  if (!parse_slot (&f->slots[n], &s, &sv[n]))
 	    return false;
+	  sv[n].textlen = s - sv[n].text;
+	  while (sv[n].textlen > 0 && is_whitespace (sv[n].text[sv[n].textlen - 1]))
+	    sv[n].textlen--;
 	}
       else if (is_whitespace (*p))
 	p++;
@@ -934,6 +940,75 @@ assemble_alias (struct fructus_alias_list *l, char *args, int depth)
   as_bad (_("invalid operands"));
 }
 
+/* The same test as the other kind of branch: a line no form of MN takes,
+   whose condition and constant - or mask - nonetheless name a branch that
+   does encode.  `br lo, ra, #256' becomes `brclr ra, #0xff00', and
+   `brclr ra, #0xfff8' becomes `br lo, ra, #8'.  The register and the target
+   are pasted back as written, so the target is evaluated once, by the
+   instruction that encodes it.  */
+
+static bool
+assemble_brequiv (const char *mnemonic, struct fructus_mnem *mn, char *args,
+		  int depth)
+{
+  unsigned int i, k;
+
+  for (i = 0; i < mn->n; i++)
+    {
+      const fructus_form *f = mn->forms[i];
+      struct slotval sv[FR_MAX_SLOTS];
+      const struct slotval *cond = NULL, *reg = NULL, *imm = NULL, *tgt = NULL;
+      valueT v;
+
+      memset (sv, 0, sizeof (sv));
+      if (!parse_form (f, args, sv))
+	continue;
+
+      for (k = 0; k < f->nslots; k++)
+	switch (f->slots[k].kind)
+	  {
+	  case FR_REG:  reg = &sv[k]; break;
+	  case FR_CC:   cond = &sv[k]; break;
+	  case FR_CK:
+	  case FR_TABLE: imm = &sv[k]; break;
+	  case FR_INT:
+	    if (f->slots[k].pcrel)
+	      tgt = &sv[k];
+	    break;
+	  default:
+	    break;
+	  }
+      if (reg == NULL || imm == NULL || tgt == NULL
+	  || imm->ex.X_op != O_constant)
+	continue;
+      v = (valueT) imm->ex.X_add_number & 0xffff;
+
+      for (k = 0; k < fructus_nbrequiv_accept; k++)
+	{
+	  const fructus_brequiv *e = &fructus_brequiv_accept[k];
+	  char *out;
+
+	  if (strcmp (e->mnemonic, mnemonic) != 0 || e->imm != v)
+	    continue;
+	  if ((e->cond == NULL) != (cond == NULL))
+	    continue;
+	  if (cond != NULL
+	      && (strncmp (e->cond, cond->name, cond->namelen) != 0
+		  || e->cond[cond->namelen] != '\0'))
+	    continue;
+
+	  out = xasprintf ("%s %s%s%.*s, #0x%04x, %.*s", e->to_mnemonic,
+			   e->to_cond ? e->to_cond : "", e->to_cond ? ", " : "",
+			   reg->textlen, reg->text, e->to_imm,
+			   tgt->textlen, tgt->text);
+	  assemble_line (out, depth + 1);
+	  free (out);
+	  return true;
+	}
+    }
+  return false;
+}
+
 static void
 assemble_line (char *str, int depth)
 {
@@ -1014,8 +1089,17 @@ assemble_line (char *str, int depth)
 
   if (best == NULL)
     {
-      /* No encoding took these operands; an alias still might.  `mov rd, rs'
-	 has no form of its own and becomes `or rd, rs, #0'.  */
+      /* No encoding took these operands; the other kind of branch, or an
+	 alias, still might.  `mov rd, rs' has no form of its own and becomes
+	 `or rd, rs, #0'.  */
+      saved = *op_end;
+      *op_end = '\0';
+      if (mn != NULL && assemble_brequiv (op_start, mn, args, depth))
+	{
+	  *op_end = saved;
+	  return;
+	}
+      *op_end = saved;
       if (al != NULL)
 	assemble_alias (al, args, depth);
       else

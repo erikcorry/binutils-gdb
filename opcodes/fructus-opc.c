@@ -367,12 +367,13 @@ const unsigned short fructus_immask5[32] =
     0x3fff 
   };
 
+/* A free index has no condition: no instruction encodes it.  */
 const char * const fructus_condimm5_cond[32] =
   {
     "eq",
     "ne",
-    "lt",
-    "ge",
+    "eq",
+    "ne",
     "eq",
     "ne",
     "lt",
@@ -399,16 +400,16 @@ const char * const fructus_condimm5_cond[32] =
     "lo",
     "lo",
     "hs",
-    "lo",
-    "hs" 
+    NULL,
+    NULL 
   };
 
 const short fructus_condimm5_imm[32] =
   {
     0,
     0,
-    0,
-    0,
+    4,
+    4,
     1,
     1,
     1,
@@ -427,16 +428,14 @@ const short fructus_condimm5_imm[32] =
     32766,
     -32767,
     -32766,
-    2,
-    2,
+    10,
+    10,
     3,
-    4,
-    4,
+    32,
+    32,
     6,
     8,
-    8,
-    256,
-    256 
+    8 
   };
 
 const char * const fructus_reg_names[8] =
