@@ -61,14 +61,14 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_IMMASK5_REG, 0, "mov" },                /* 0x2d */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "movhi" },              /* 0x2e */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "movhi" },              /* 0x2f */
-    { 2, FRUCTUS_2B_IMM5_REG, 0, "mul" },                   /* 0x30 */
-    { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "mul" },              /* 0x31 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x30 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x31 */
     { 2, FRUCTUS_2B_REG_REG, 0, "sxt8" },                   /* 0x32 */
     { 2, FRUCTUS_2B_REG_REG, 0, "clz" },                    /* 0x33 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x34 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x35 */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mul" },                /* 0x36 */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mul" },                /* 0x37 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x36 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0x37 */
     { 2, FRUCTUS_2B_IMM5_REG, 0, "add" },                   /* 0x38 */
     { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "add" },              /* 0x39 */
     { 2, FRUCTUS_2B_IMM3_REG_REG, 0, "add" },               /* 0x3a */
@@ -189,30 +189,30 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 3, FRUCTUS_3B_IMMASK5_OFF8_REG, 1, "brset" },         /* 0xad */
     { 1, FRUCTUS_1B_NONE, 0, "sei" },                       /* 0xae */
     { 1, FRUCTUS_1B_NONE, 0, "cli" },                       /* 0xaf */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb0 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb1 */
+    { 2, FRUCTUS_2B_IMM5_REG, 0, "mul" },                   /* 0xb0 */
+    { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "mul" },              /* 0xb1 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb2 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb3 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb4 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb5 */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xb6 */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xb7 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mul" },                /* 0xb6 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mul" },                /* 0xb7 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb8 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb9 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xba */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbb */
+    { 2, FRUCTUS_2B_REG_REG, 0, "recip" },                  /* 0xbb */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbc */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xbd */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhs" },              /* 0xbe */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhs" },              /* 0xbf */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xbe */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xbf */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc0 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc1 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc2 */
-    { 2, FRUCTUS_2B_REG_REG, 0, "recip" },                  /* 0xc3 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc3 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc4 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc5 */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "recip" },              /* 0xc6 */
-    { 2, FRUCTUS_2B_REG_REG_REG, 0, "recip" },              /* 0xc7 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhs" },              /* 0xc6 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhs" },              /* 0xc7 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc8 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc9 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xca */
