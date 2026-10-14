@@ -195,8 +195,8 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_OFF8, 1, "jmpr" },                      /* 0xb3 */
     { 3, FRUCTUS_3B_IMMBIT5_OFF8_REG, 1, "brset" },         /* 0xb4 */
     { 3, FRUCTUS_3B_IMMASK5_OFF8_REG, 1, "brset" },         /* 0xb5 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb6 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb7 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "ishi" },               /* 0xb6 */
+    { 2, FRUCTUS_2B_REG_REG_REG, 0, "ishi" },               /* 0xb7 */
     { 2, FRUCTUS_2B_IMM5_REG, 0, "mul" },                   /* 0xb8 */
     { 3, FRUCTUS_3B_IMM10_REG_REG, 0, "mul" },              /* 0xb9 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xba */
