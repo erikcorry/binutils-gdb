@@ -192,7 +192,7 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_REG, 0, "call" },                       /* 0xb0 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb1 */
     { 2, FRUCTUS_2B_REG, 0, "jmp" },                        /* 0xb2 */
-    { 2, FRUCTUS_2B_OFF8, 1, "jmpr" },                      /* 0xb3 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb3 */
     { 3, FRUCTUS_3B_IMMBIT5_OFF8_REG, 1, "brset" },         /* 0xb4 */
     { 3, FRUCTUS_3B_IMMASK5_OFF8_REG, 1, "brset" },         /* 0xb5 */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "ishi" },               /* 0xb6 */

@@ -30,10 +30,9 @@
    shortest first, so the first form that accepts what was written is the
    smallest one that can encode it.
 
-   `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
-   and a 3-byte form reaching the whole address space.  md_begin finds that
-   pair by inspecting the table rather than by knowing its name, and requires
-   it to be unique - see find_relax_pair.
+   Nothing relaxes.  A form is chosen once its operands are known, and a
+   branch whose target is out of reach is the compiler's to lengthen: gcc
+   picks between a branch and a branch over a `jmp' by its own lengths.
 
    THE ZERO PAGE.  `#zp(expr)' in an imm10 field is the displacement of expr
    from FRUCTUS_ZP_BASE, the value a base register is assumed to hold:
@@ -99,26 +98,6 @@ const pseudo_typeS md_pseudo_table[] =
   { "zphi", s_zp, 1 },
   { 0, 0, 0 }
 };
-
-/* =========================================================================
-   Relaxation
-   ========================================================================= */
-
-#define FR_RELAX_SHORT	1
-#define FR_RELAX_LONG	2
-
-/* rlx_forward and rlx_backward are measured from the start of the frag, while
-   the displacement a short jmpr encodes is measured from the end of the 2-byte
-   instruction - so the reach is the field's reach shifted by 2.  */
-const relax_typeS md_relax_table[] =
-{
-  { 0,   0,    0, 0 },			/* unused: subtypes start at 1 */
-  { 129, -126, 2, FR_RELAX_LONG },	/* FR_RELAX_SHORT */
-  { 0,   0,    3, 0 }			/* FR_RELAX_LONG */
-};
-
-static const fructus_form *relax_short;
-static const fructus_form *relax_long;
 
 /* =========================================================================
    The mnemonic index
@@ -545,7 +524,7 @@ match_form (const fructus_form *f, struct slotval *sv, struct matched *m)
 	    {
 	      /* A branch displacement depends on where this instruction lands,
 		 so the field's width decides whether the form is usable and
-		 the value arrives as a fixup - or, for jmpr, as relaxation.  */
+		 the value arrives as a fixup.  */
 	      if (o->reloc == FR_R_NONE)
 		return false;
 	      m->known[i] = false;
@@ -754,51 +733,6 @@ match_alias (const fructus_alias *a, char *line, char **cap, int *caplen)
    md_begin
    ========================================================================= */
 
-/* Find the one instruction with two widths of the same pc-relative field.
-   Detected from the table rather than by name, and required to be unique: a
-   second relaxable pair would need its own state pair in md_relax_table.  */
-
-static void
-find_relax_pair (void)
-{
-  unsigned int i, j;
-
-  for (i = 0; i < fructus_nforms; i++)
-    {
-      const fructus_form *a = &fructus_forms[i];
-
-      if (a->nslots != 1 || a->slots[0].kind != FR_INT || !a->slots[0].pcrel)
-	continue;
-
-      for (j = i + 1; j < fructus_nforms; j++)
-	{
-	  const fructus_form *b = &fructus_forms[j];
-
-	  if (strcmp (a->mnemonic, b->mnemonic) != 0
-	      || strcmp (a->syntax, b->syntax) != 0
-	      || b->nslots != 1 || !b->slots[0].pcrel
-	      || a->nbytes == b->nbytes)
-	    continue;
-
-	  if (relax_short != NULL)
-	    as_fatal (_("internal error: more than one relaxable instruction "
-			"(%s and %s); md_relax_table needs a state pair for "
-			"each"), relax_short->mnemonic, a->mnemonic);
-
-	  relax_short = a->nbytes < b->nbytes ? a : b;
-	  relax_long  = a->nbytes < b->nbytes ? b : a;
-	}
-    }
-
-  if (relax_short == NULL)
-    return;
-
-  if (relax_short->nbytes != md_relax_table[FR_RELAX_SHORT].rlx_length
-      || relax_long->nbytes != md_relax_table[FR_RELAX_LONG].rlx_length)
-    as_fatal (_("internal error: md_relax_table does not match the %s forms"),
-	      relax_short->mnemonic);
-}
-
 void
 md_begin (void)
 {
@@ -843,8 +777,6 @@ md_begin (void)
       l->aliases[l->n++] = a;
     }
 
-  find_relax_pair ();
-
   bfd_set_arch_mach (stdoutput, TARGET_ARCH, bfd_mach_fructus);
 }
 
@@ -856,42 +788,6 @@ md_operand (expressionS *op ATTRIBUTE_UNUSED)
 /* =========================================================================
    md_assemble
    ========================================================================= */
-
-static void
-emit_relaxed (const fructus_form *f, struct slotval *sv)
-{
-  expressionS *ex = &sv[0].ex;
-  symbolS *sym;
-  offsetT off;
-  char *buf;
-
-  if (ex->X_op == O_symbol)
-    {
-      sym = ex->X_add_symbol;
-      off = ex->X_add_number;
-    }
-  else if (ex->X_op == O_constant)
-    {
-      sym = abs_section_sym;
-      off = ex->X_add_number;
-    }
-  else
-    {
-      /* Anything more involved than a symbol plus a constant cannot be
-	 measured before the layout is fixed, so take the long form.  */
-      struct matched m;
-
-      if (!match_form (relax_long, sv, &m))
-	abort ();
-      emit_form (relax_long, sv, &m);
-      return;
-    }
-
-  buf = frag_var (rs_machine_dependent, relax_long->nbytes, 0,
-		  FR_RELAX_SHORT, sym, off, NULL);
-  (void) buf;
-  (void) f;
-}
 
 static void
 assemble_line (char *str, int depth);
@@ -1020,7 +916,6 @@ assemble_line (char *str, int depth)
   const fructus_form *best = NULL;
   struct slotval best_sv[FR_MAX_SLOTS];
   struct matched best_m;
-  bool long_matched = false;
 
   if (depth > 4)
     {
@@ -1072,19 +967,10 @@ assemble_line (char *str, int depth)
 	if (!match_form (f, sv, &m))
 	  continue;
 
-	if (best == NULL)
-	  {
-	    best = f;
-	    memcpy (best_sv, sv, sizeof (sv));
-	    best_m = m;
-	    if (f != relax_short)
-	      break;		/* nothing else to learn */
-	  }
-	else if (f == relax_long)
-	  {
-	    long_matched = true;
-	    break;
-	  }
+	best = f;
+	memcpy (best_sv, sv, sizeof (sv));
+	best_m = m;
+	break;
       }
 
   if (best == NULL)
@@ -1112,10 +998,7 @@ assemble_line (char *str, int depth)
       return;
     }
 
-  if (best == relax_short && long_matched)
-    emit_relaxed (best, best_sv);
-  else
-    emit_form (best, best_sv, &best_m);
+  emit_form (best, best_sv, &best_m);
 }
 
 void
@@ -1128,37 +1011,20 @@ md_assemble (char *str)
    Relaxation callbacks
    ========================================================================= */
 
-int
-md_estimate_size_before_relax (fragS *fragP, segT segment)
-{
-  /* A target outside this section, or one the linker may replace, cannot be
-     measured now.  */
-  if (S_GET_SEGMENT (fragP->fr_symbol) != segment
-      || S_IS_WEAK (fragP->fr_symbol))
-    fragP->fr_subtype = FR_RELAX_LONG;
+/* No frag is ever variable: nothing relaxes.  */
 
-  return md_relax_table[fragP->fr_subtype].rlx_length;
+int
+md_estimate_size_before_relax (fragS *fragP ATTRIBUTE_UNUSED,
+			       segT segment ATTRIBUTE_UNUSED)
+{
+  abort ();
 }
 
 void
 md_convert_frag (bfd *abfd ATTRIBUTE_UNUSED, segT sec ATTRIBUTE_UNUSED,
-		 fragS *fragP)
+		 fragS *fragP ATTRIBUTE_UNUSED)
 {
-  const fructus_form *f = (fragP->fr_subtype == FR_RELAX_SHORT
-			   ? relax_short : relax_long);
-  const fructus_opnd *o = &f->slots[0];
-  int size = o->bits / 8;
-  char *buf = fragP->fr_literal + fragP->fr_fix;
-
-  /* The only slot is the displacement, and the fixup supplies it, so the word
-     is just the form's fixed bits.  */
-  put_word (buf, f->base, f->nbytes);
-
-  fix_new (fragP, fragP->fr_fix + f->nbytes - size, size,
-	   fragP->fr_symbol, fragP->fr_offset, 1, reloc_of (o->reloc));
-
-  fragP->fr_fix += f->nbytes;
-  fragP->fr_var = 0;
+  abort ();
 }
 
 /* =========================================================================

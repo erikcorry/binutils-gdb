@@ -81,7 +81,7 @@ static reloc_howto_type fructus_elf_howto_table [] =
 	 false, 0, 0xffff, false),
 
   /* An 8-bit signed displacement from the next instruction, -128..+127: every
-     conditional branch, and the short jmpr.  Out of range is a link error
+     conditional branch.  Out of range is a link error
      rather than a silent wrap.  */
   HOWTO (R_FRUCTUS_8_PCREL,
 	 0, 1, 8, true, 0,

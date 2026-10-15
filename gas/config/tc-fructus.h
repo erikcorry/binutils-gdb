@@ -49,12 +49,6 @@
 extern bfd_reloc_code_real_type fructus_parse_cons_expression (expressionS *,
 								 int);
 
-/* `jmpr' is the one instruction that relaxes: a 2-byte form reaching -128..127
-   and a 3-byte form reaching the whole address space.  Everything else has a
-   single encoding once its operands are known.  */
-#define TC_GENERIC_RELAX_TABLE md_relax_table
-extern const relax_typeS md_relax_table[];
-
 /* customasm's local labels: `.loop' written after `memcpy:' is the symbol
    `memcpy.loop', and can be reached by that name from anywhere.  The spec's
    own snippets and libraries are written that way, and gas has to read them

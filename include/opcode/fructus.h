@@ -43,18 +43,17 @@ enum fructus_itype
   FRUCTUS_2B_IMM5_REG            = 3,
   FRUCTUS_2B_IMMASK5_REG         = 4,
   FRUCTUS_2B_IMMBIT5_REG         = 5,
-  FRUCTUS_2B_OFF8                = 6,
-  FRUCTUS_2B_REG                 = 7,
-  FRUCTUS_2B_REG_REG             = 8,
-  FRUCTUS_2B_REG_REG_REG         = 9,
-  FRUCTUS_2B_REG_REG_SHIFT3      = 10,
-  FRUCTUS_3B_COND3_OFF8_REG_REG  = 11,
-  FRUCTUS_3B_CONDIMM5_OFF8_REG   = 12,
-  FRUCTUS_3B_IMM10_REG_REG       = 13,
-  FRUCTUS_3B_IMMASK5_OFF8_REG    = 14,
-  FRUCTUS_3B_IMMBIT5_OFF8_REG    = 15,
-  FRUCTUS_3B_INT16               = 16,
-  FRUCTUS_3B_INT16_REG           = 17
+  FRUCTUS_2B_REG                 = 6,
+  FRUCTUS_2B_REG_REG             = 7,
+  FRUCTUS_2B_REG_REG_REG         = 8,
+  FRUCTUS_2B_REG_REG_SHIFT3      = 9,
+  FRUCTUS_3B_COND3_OFF8_REG_REG  = 10,
+  FRUCTUS_3B_CONDIMM5_OFF8_REG   = 11,
+  FRUCTUS_3B_IMM10_REG_REG       = 12,
+  FRUCTUS_3B_IMMASK5_OFF8_REG    = 13,
+  FRUCTUS_3B_IMMBIT5_OFF8_REG    = 14,
+  FRUCTUS_3B_INT16               = 15,
+  FRUCTUS_3B_INT16_REG           = 16
 };
 
 /* An index is not a value: byte 1 of `add rd, ra, #imm3` holds 6 where the
