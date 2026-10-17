@@ -182,17 +182,17 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "pop" },                /* 0xa6 */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "pop" },                /* 0xa7 */
     { 3, FRUCTUS_3B_CONDIMM5_OFF8_REG, 1, "br" },           /* 0xa8 */
-    { 3, FRUCTUS_3B_INT16, 0, "jmp" },                      /* 0xa9 */
-    { 3, FRUCTUS_3B_INT16, 0, "call" },                     /* 0xaa */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xab */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xa9 */
+    { 3, FRUCTUS_3B_INT16, 0, "jmp" },                      /* 0xaa */
+    { 3, FRUCTUS_3B_INT16, 0, "call" },                     /* 0xab */
     { 3, FRUCTUS_3B_IMMBIT5_OFF8_REG, 1, "brclr" },         /* 0xac */
     { 3, FRUCTUS_3B_IMMASK5_OFF8_REG, 1, "brclr" },         /* 0xad */
     { 3, FRUCTUS_3B_COND3_OFF8_REG_REG, 1, "br" },          /* 0xae */
     { 3, FRUCTUS_3B_COND3_OFF8_REG_REG, 1, "br" },          /* 0xaf */
-    { 2, FRUCTUS_2B_REG, 0, "call" },                       /* 0xb0 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb0 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb1 */
     { 2, FRUCTUS_2B_REG, 0, "jmp" },                        /* 0xb2 */
-    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xb3 */
+    { 2, FRUCTUS_2B_REG, 0, "call" },                       /* 0xb3 */
     { 3, FRUCTUS_3B_IMMBIT5_OFF8_REG, 1, "brset" },         /* 0xb4 */
     { 3, FRUCTUS_3B_IMMASK5_OFF8_REG, 1, "brset" },         /* 0xb5 */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "ishi" },               /* 0xb6 */
