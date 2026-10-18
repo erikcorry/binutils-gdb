@@ -76,6 +76,6 @@ extern const char * const  fructus_cond_names[8];
 /* nop, one byte.  gas pads code with it: its default is 0x00, which here is
    brk, so a program that fell into the padding before an aligned label
    would trap.  */
-#define FRUCTUS_NOP 0x87
+#define FRUCTUS_NOP 0x82
 
 #endif /* _FRUCTUS_H_ */
