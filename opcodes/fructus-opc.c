@@ -208,7 +208,7 @@ const fructus_opc_info_t fructus_opc_info[256] =
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc0 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc1 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc2 */
-    { 2, FRUCTUS_2B_REG_REG, 0, "recip" },                  /* 0xc3 */
+    { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc3 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc4 */
     { 0, FRUCTUS_UNUSED, 0, NULL },        /* 0xc5 */
     { 2, FRUCTUS_2B_REG_REG_REG, 0, "mulhu" },              /* 0xc6 */
