@@ -43,7 +43,8 @@
 
 #define md_number_to_chars		number_to_chars_littleendian
 
-/* `.short tag1(expr)': a tagged pointer, R_FRUCTUS_16_TAG1.  */
+/* `.short tag1(expr)': a tagged pointer, R_FRUCTUS_16_TAG1, and
+   `.byte dispatch(expr)': an interpreter's opcode, R_FRUCTUS_8_DISPATCH.  */
 #define TC_PARSE_CONS_EXPRESSION(EXP, NBYTES) \
   fructus_parse_cons_expression (EXP, NBYTES)
 extern bfd_reloc_code_real_type fructus_parse_cons_expression (expressionS *,

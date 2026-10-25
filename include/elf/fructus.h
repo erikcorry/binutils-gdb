@@ -24,8 +24,8 @@
 
 /* Relocation types.  Four are the generic ones under local names: a plain
    8- or 16-bit field, absolute or relative to the address of the next
-   instruction.  The fifth and sixth, R_FRUCTUS_ZP10 and R_FRUCTUS_16_TAG1,
-   are Fructus's own - see below.
+   instruction.  The fifth to seventh, R_FRUCTUS_ZP10, R_FRUCTUS_16_TAG1 and
+   R_FRUCTUS_8_DISPATCH, are Fructus's own - see below.
    See isa/fructus.toml's [[reloc]] entries, which the assembler's table is
    generated from.
 
@@ -40,6 +40,7 @@ START_RELOC_NUMBERS (elf_fructus_reloc_type)
   RELOC_NUMBER (R_FRUCTUS_16_PCREL,  4)  /* jmpr rel16, callr rel16.  */
   RELOC_NUMBER (R_FRUCTUS_ZP10,      5)  /* #zp(sym) in an imm10 field.  */
   RELOC_NUMBER (R_FRUCTUS_16_TAG1,   6)  /* .short tag1(sym): S + A + 1.  */
+  RELOC_NUMBER (R_FRUCTUS_8_DISPATCH, 7) /* .byte dispatch(sym).  */
 END_RELOC_NUMBERS (R_FRUCTUS_max)
 
 /* THE ZERO PAGE is 0x0000..0x03ff, reached as [rb, #imm10] with rb holding
@@ -63,5 +64,15 @@ END_RELOC_NUMBERS (R_FRUCTUS_max)
    The datum itself may be at any address, odd or even: a bytecode stream
    is not aligned.  */
 #define FRUCTUS_TAG1 1
+
+/* A DISPATCH BYTE is the opcode of an interpreter whose handlers are each
+   16-aligned in the top 4K, below the vectors, and which dispatches with
+   `shl r, r, #4; rsb r5, r, #0; jmp r5': the handler for byte B is at
+   0x10000 - 16 * B.  R_FRUCTUS_8_DISPATCH places (0x10000 - (S + A)) >> 4
+   in a byte, written `.byte dispatch(sym)', and refuses an S + A that is
+   not 16-aligned or not in FRUCTUS_DISPATCH_LOW..0xfff0, which bytes 1 to
+   255 reach.  */
+#define FRUCTUS_DISPATCH_SHIFT 4
+#define FRUCTUS_DISPATCH_LOW 0xf010
 
 #endif /* _ELF_FRUCTUS_H */

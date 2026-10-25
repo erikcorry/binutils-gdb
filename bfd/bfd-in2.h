@@ -7331,6 +7331,11 @@ enum bfd_reloc_code_real
   /* Fructus tagged pointer: a 16-bit absolute address plus one, in a datum
      at any alignment.  The value placed is S + A + 1, and S + A must be even.  */
   BFD_RELOC_FRUCTUS_16_TAG1,
+
+  /* Fructus dispatch byte: the byte B whose handler, at 0x10000 - 16 * B, is
+     S + A.  The value placed is (0x10000 - (S + A)) >> 4, and S + A must be
+     16-aligned and in 0xf010..0xfff0.  */
+  BFD_RELOC_FRUCTUS_8_DISPATCH,
   BFD_RELOC_UNUSED
 };
 typedef enum bfd_reloc_code_real bfd_reloc_code_real_type;

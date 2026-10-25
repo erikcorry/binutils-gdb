@@ -54,7 +54,17 @@
    A symbol becomes R_FRUCTUS_16_TAG1, which only a 16-bit field can hold, so
    the mov is the three-byte one; a constant is tagged here, and then competes
    for the shorter forms like any other.  An odd expr is refused, by gas or by
-   the linker: see include/elf/fructus.h.  */
+   the linker: see include/elf/fructus.h.
+
+   DISPATCH BYTES.  `dispatch(expr)' in a one-byte data directive is the
+   opcode of an interpreter whose handler for it is at expr, which its
+   dispatch finds at 0x10000 - 16 * byte:
+
+       .byte   dispatch(som_bc_DUP)
+
+   A symbol becomes R_FRUCTUS_8_DISPATCH; a constant is placed here.  An expr
+   that is not 16-aligned in 0xf010..0xfff0 is refused, by gas or by the
+   linker.  */
 
 #include "as.h"
 #include "safe-ctype.h"
@@ -1032,10 +1042,31 @@ md_convert_frag (bfd *abfd ATTRIBUTE_UNUSED, segT sec ATTRIBUTE_UNUSED,
    ========================================================================= */
 
 /* `tag1(expr)' as a value of a two-byte data directive - .short, .2byte,
-   .hword - which is R_FRUCTUS_16_TAG1 against a symbol; see the top of this
+   .hword - which is R_FRUCTUS_16_TAG1 against a symbol, and `dispatch(expr)'
+   as a value of a one-byte one, R_FRUCTUS_8_DISPATCH; see the top of this
    file.  The datum may be at any address.  Anything else is an ordinary
-   expression, so a symbol that happens to be called tag1 still works when
-   it is not followed by a parenthesis - in an operand too.  */
+   expression, so a symbol that happens to be called tag1 or dispatch still
+   works when it is not followed by a parenthesis - in an operand too.  */
+
+/* The expression in `name(expr)', with S at the name, or false if S is not
+   NAME and a parenthesis.  */
+
+static bool
+parse_cons_operator (char *s, const char *name, expressionS *exp)
+{
+  size_t const len = strlen (name);
+
+  if (strncasecmp (s, name, len) != 0 || *skip_ws (s + len) != '(')
+    return false;
+  input_line_pointer = skip_ws (s + len) + 1;
+  expression (exp);
+  input_line_pointer = skip_ws (input_line_pointer);
+  if (*input_line_pointer != ')')
+    as_bad (_("missing `)' after %s("), name);
+  else
+    input_line_pointer++;
+  return true;
+}
 
 bfd_reloc_code_real_type
 fructus_parse_cons_expression (expressionS *exp, int nbytes)
@@ -1043,23 +1074,23 @@ fructus_parse_cons_expression (expressionS *exp, int nbytes)
   char *save = input_line_pointer;
   char *s = skip_ws (input_line_pointer);
 
-  if (strncasecmp (s, "tag1", 4) == 0 && *skip_ws (s + 4) == '(')
+  if (parse_cons_operator (s, "tag1", exp))
     {
-      input_line_pointer = skip_ws (s + 4) + 1;
-      expression (exp);
-      input_line_pointer = skip_ws (input_line_pointer);
-      if (*input_line_pointer != ')')
-	{
-	  as_bad (_("missing `)' after tag1("));
-	  return BFD_RELOC_NONE;
-	}
-      input_line_pointer++;
       if (nbytes != 2)
 	{
 	  as_bad (_("a tagged pointer is two bytes, not %d"), nbytes);
 	  return BFD_RELOC_NONE;
 	}
       return BFD_RELOC_FRUCTUS_16_TAG1;
+    }
+  if (parse_cons_operator (s, "dispatch", exp))
+    {
+      if (nbytes != 1)
+	{
+	  as_bad (_("a dispatch byte is one byte, not %d"), nbytes);
+	  return BFD_RELOC_NONE;
+	}
+      return BFD_RELOC_FRUCTUS_8_DISPATCH;
     }
 
   input_line_pointer = save;
@@ -1120,6 +1151,22 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
 			  _("tagged pointer to an odd address %#lx"),
 			  (long) val);
 	  number_to_chars_littleendian (buf, val + FRUCTUS_TAG1, 2);
+	}
+      break;
+
+    case BFD_RELOC_FRUCTUS_8_DISPATCH:
+      /* As for the zero page: an absolute value is placed here, and against
+	 a symbol the linker places it from the addend.  The value is an
+	 address, which is checked here and not by fixup_segment as if it
+	 were the byte.  */
+      fixP->fx_no_overflow = 1;
+      if (fixP->fx_addsy == NULL)
+	{
+	  if (val < FRUCTUS_DISPATCH_LOW || val > 0xfff0
+	      || (val & ((1 << FRUCTUS_DISPATCH_SHIFT) - 1)) != 0)
+	    as_bad_where (fixP->fx_file, fixP->fx_line,
+			  _("no dispatch byte reaches %#lx"), (long) val);
+	  *buf = (0x10000 - val) >> FRUCTUS_DISPATCH_SHIFT;
 	}
       break;
 

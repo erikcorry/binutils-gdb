@@ -7890,6 +7890,13 @@ ENUMDOC
   Fructus tagged pointer: a 16-bit absolute address plus one, in a datum
   at any alignment.  The value placed is S + A + 1, and S + A must be even.
 
+ENUM
+  BFD_RELOC_FRUCTUS_8_DISPATCH
+ENUMDOC
+  Fructus dispatch byte: the byte B whose handler, at 0x10000 - 16 * B, is
+  S + A.  The value placed is (0x10000 - (S + A)) >> 4, and S + A must be
+  16-aligned and in 0xf010..0xfff0.
+
 ENDSENUM
   BFD_RELOC_UNUSED
 

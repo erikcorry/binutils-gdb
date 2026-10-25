@@ -19,13 +19,15 @@
 
 /* Fructus is a 16-bit machine in an elf32 container.  There is no GOT, no PLT,
    no dynamic linking and no MMU, so this file is nearly the minimum an ELF
-   backend can be: seven relocations, the two lookups, and a relocate_section
+   backend can be: eight relocations, the two lookups, and a relocate_section
    that hands almost everything to _bfd_final_link_relocate.
 
    Four of the real relocations are generic.  The fifth, R_FRUCTUS_ZP10,
    reaches the zero page from a base register holding 0x200 and is applied
    here, by fructus_zp_apply.  The sixth, R_FRUCTUS_16_TAG1, is a tagged
-   pointer, applied by fructus_tag1_apply.  See include/elf/fructus.h.  */
+   pointer, applied by fructus_tag1_apply.  The seventh, R_FRUCTUS_8_DISPATCH,
+   is an interpreter's opcode, applied by fructus_dispatch_apply.  See
+   include/elf/fructus.h.  */
 
 #include "sysdep.h"
 #include "bfd.h"
@@ -36,6 +38,8 @@
 static bfd_reloc_status_type fructus_elf_zp_reloc
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 static bfd_reloc_status_type fructus_elf_tag1_reloc
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+static bfd_reloc_status_type fructus_elf_dispatch_reloc
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 
 /* `pcrel_offset' is true, so the linker computes S + A - P with P the address
@@ -124,6 +128,18 @@ static reloc_howto_type fructus_elf_howto_table [] =
 	 fructus_elf_tag1_reloc,
 	 "R_FRUCTUS_16_TAG1",
 	 false, 0, 0xffff, false),
+
+  /* An interpreter's opcode: the byte whose handler is at S + A, which the
+     dispatch finds at 0x10000 - 16 * byte.  S + A must be 16-aligned and in
+     0xf010..0xfff0, or there is no such byte.  The negation and the shift
+     are why this has a special function and is applied by
+     fructus_dispatch_apply rather than _bfd_final_link_relocate.  */
+  HOWTO (R_FRUCTUS_8_DISPATCH,
+	 0, 1, 8, false, 0,
+	 complain_overflow_dont,
+	 fructus_elf_dispatch_reloc,
+	 "R_FRUCTUS_8_DISPATCH",
+	 false, 0, 0xff, false),
 };
 
 /* Place ADDRESS, as a zero page displacement, in the field at LOC.  */
@@ -214,6 +230,52 @@ fructus_elf_tag1_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
   return fructus_tag1_apply (abfd, address, (bfd_byte *) data + octets);
 }
 
+/* Place the opcode whose handler is at ADDRESS in the byte at LOC.  An
+   address out of the handlers' range overflows, and one between two of
+   them is no handler's.  */
+
+static bfd_reloc_status_type
+fructus_dispatch_apply (bfd *abfd ATTRIBUTE_UNUSED, bfd_vma address,
+			bfd_byte *loc)
+{
+  if (address < FRUCTUS_DISPATCH_LOW || address > 0xfff0)
+    return bfd_reloc_overflow;
+  if (address & ((1 << FRUCTUS_DISPATCH_SHIFT) - 1))
+    return bfd_reloc_dangerous;
+  bfd_put_8 (abfd, (0x10000 - address) >> FRUCTUS_DISPATCH_SHIFT, loc);
+  return bfd_reloc_ok;
+}
+
+/* R_FRUCTUS_8_DISPATCH outside a final link, as fructus_elf_zp_reloc is for
+   the zero page.  */
+
+static bfd_reloc_status_type
+fructus_elf_dispatch_reloc (bfd *abfd, arelent *reloc_entry, asymbol *symbol,
+			    void *data, asection *input_section,
+			    bfd *output_bfd, char **error_message)
+{
+  bfd_size_type octets;
+  bfd_vma address;
+
+  if (output_bfd != NULL)
+    return bfd_elf_generic_reloc (abfd, reloc_entry, symbol, data,
+				  input_section, output_bfd, error_message);
+
+  if (bfd_is_und_section (symbol->section))
+    return bfd_reloc_undefined;
+
+  octets = reloc_entry->address * bfd_octets_per_byte (abfd, input_section);
+  if (!bfd_reloc_offset_in_range (reloc_entry->howto, abfd, input_section,
+				  octets))
+    return bfd_reloc_outofrange;
+
+  address = (symbol->value + symbol->section->output_section->vma
+	     + symbol->section->output_offset + reloc_entry->addend);
+  if (address & ((1 << FRUCTUS_DISPATCH_SHIFT) - 1))
+    *error_message = (char *) _("dispatch to an address no handler is at");
+  return fructus_dispatch_apply (abfd, address, (bfd_byte *) data + octets);
+}
+
 /* Map BFD reloc types to Fructus ELF reloc types.  */
 
 struct fructus_reloc_map
@@ -231,6 +293,7 @@ static const struct fructus_reloc_map fructus_reloc_map [] =
   { BFD_RELOC_16_PCREL,	 R_FRUCTUS_16_PCREL },
   { BFD_RELOC_FRUCTUS_ZP10, R_FRUCTUS_ZP10 },
   { BFD_RELOC_FRUCTUS_16_TAG1, R_FRUCTUS_16_TAG1 },
+  { BFD_RELOC_FRUCTUS_8_DISPATCH, R_FRUCTUS_8_DISPATCH },
 };
 
 static reloc_howto_type *
@@ -284,8 +347,8 @@ fructus_info_to_howto_rela (bfd *abfd,
 
 /* Relocate a Fructus ELF section.  The standard walk, with
    _bfd_final_link_relocate doing the arithmetic for the generic relocations,
-   fructus_zp_apply for the zero page one and fructus_tag1_apply for the
-   tagged pointer.  */
+   fructus_zp_apply for the zero page one, fructus_tag1_apply for the
+   tagged pointer and fructus_dispatch_apply for the dispatch byte.  */
 
 static int
 fructus_elf_relocate_section (struct bfd_link_info *info,
@@ -368,6 +431,12 @@ fructus_elf_relocate_section (struct bfd_link_info *info,
 	     ? fructus_tag1_apply (input_bfd, relocation + rel->r_addend,
 				   contents + rel->r_offset)
 	     : bfd_reloc_outofrange);
+      else if (r_type == R_FRUCTUS_8_DISPATCH)
+	r = (bfd_reloc_offset_in_range (howto, input_bfd, input_section,
+					rel->r_offset)
+	     ? fructus_dispatch_apply (input_bfd, relocation + rel->r_addend,
+				       contents + rel->r_offset)
+	     : bfd_reloc_outofrange);
       else
 	r = _bfd_final_link_relocate (howto, input_bfd, input_section,
 				      contents, rel->r_offset, relocation,
@@ -399,11 +468,16 @@ fructus_elf_relocate_section (struct bfd_link_info *info,
 	      break;
 
 	    case bfd_reloc_dangerous:
-	      /* The only relocation that returns this is the tagged pointer,
-		 and the link fails: an odd address is no object's.  */
+	      /* The tagged pointer and the dispatch byte return this, and the
+		 link fails: an odd address is no object's, and one between
+		 two handlers no handler's.  */
 	      if (r_type == R_FRUCTUS_16_TAG1)
 		(*info->callbacks->reloc_dangerous)
 		  (info, _("tagged pointer to an odd address"),
+		   input_bfd, input_section, rel->r_offset);
+	      else if (r_type == R_FRUCTUS_8_DISPATCH)
+		(*info->callbacks->reloc_dangerous)
+		  (info, _("dispatch to an address no handler is at"),
 		   input_bfd, input_section, rel->r_offset);
 	      else
 		msg = _("internal error: dangerous relocation");
